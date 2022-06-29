@@ -1,6 +1,7 @@
 # CPECOG1-Quiz-MiniFb-
-
 First Commit Still Buggy. 
+
+See https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md for editing README files.
 
 ## Issues to be Addressed:
 * Coin positioning is buggy
@@ -17,3 +18,9 @@ First Commit Still Buggy.
 * Fix coin positioning
 * Implement enemies in game (cannot be done without fixing coin positioning first)
 * Fix camera panning
+
+## Issues Addressed:
+* Collision and gravity now works
+* User control of ball
+* Terrain mask works 
+* UML Diagram works-ish (is now a bit outdated)
