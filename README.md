@@ -21,6 +21,7 @@ See https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md for edit
 ## Urgent Tasks:
 * Fix coin positioning
 * Implement enemies in game (cannot be done without fixing coin positioning first)
+* Implement jump method for object
 * Fix camera panning
 
 ## Issues Addressed:
