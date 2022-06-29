@@ -15,5 +15,5 @@ First Commit Still Buggy.
 
 ## Urgent Tasks:
 * Fix coin positioning
-* Implement enemies in game
+* Implement enemies in game (cannot be done without fixing coin positioning first)
 * Fix camera panning
