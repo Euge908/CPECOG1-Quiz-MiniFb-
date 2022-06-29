@@ -3,11 +3,11 @@
 First Commit Still Buggy. 
 
 ## Issues to be Addressed:
-[x]Coin positioning is buggy
-[x]Ball cannot collect coin
-[x]Score count does not work
-[x]Pause does not work
-[x]Panning still glitchy
-[x]SaveGlass Not working
-[x]Water Class Object not yet initialized
-[x]Ball Jump is not yet Implemented (Currently ball is in 'creative/ god mode'
+*Coin positioning is buggy
+*Ball cannot collect coin
+*Score count does not work
+*Pause does not work
+*Panning still glitchy
+*SaveGlass Not working
+*Water Class Object not yet initialized
+*Ball Jump is not yet Implemented (Currently ball is in 'creative/ god mode'
