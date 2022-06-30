@@ -28,9 +28,6 @@ typedef struct {
 } backgroundImageHolder;
 
 
-
-
-
 class Entity {
 protected:
     //positionX and positionY are relative coordinates to the framebuffer
