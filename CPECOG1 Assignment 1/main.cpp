@@ -15,6 +15,8 @@
 #define sprite_width 100
 #define sprite_height 100
 
+#define staticObjectsCount 20
+
 
 typedef struct {
     int bg_x;
@@ -40,8 +42,17 @@ public:
         width = 0;
         height = 0;
         stride = 0;
+        positionYOld = 0;
+        positionXOld = 0;
+        absPositionX = 0;
+        absPositionY = 0;
+
 
     }
+    void printAttributes() {
+        printf("positionX: %d, positionY: %d, width: %d, height: %d, stride: %d, positionYOld: %d, positionXOld: %d, absPositionX: %d, absPositionY: %d\n\n", positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY);
+    }
+
 
     Entity(int w, int h, FIBITMAP* i) {
         Entity();
@@ -51,6 +62,10 @@ public:
         setImageData(i);
     }
 
+    void updateOldRelCoords() {
+        setYOld(positionY);
+        setXOld(positionX);
+    }
 
     void setAbsX(int x) {
         absPositionX = x;
@@ -133,13 +148,13 @@ public:
 };
 
 
-class staticObject: public Entity {
+class staticObject : public Entity {
 protected:
     uint8_t coin, SaveGlass, unpassable;
 
 public:
-    staticObject() {
-
+    staticObject() : Entity() {
+        coin = 0; SaveGlass = 0; unpassable = 0;
     }
 
     staticObject(int w, int h, FIBITMAP* i) : Entity(w, h, i) {
@@ -188,7 +203,7 @@ public:
 };
 
 
-class Ball: public Entity{
+class Ball : public Entity {
 private:
     int powerUpState; //ball size
     int lives;
@@ -203,8 +218,8 @@ private:
 
 
 public:
-    Ball(int w, int h, FIBITMAP* i): Entity(w, h, i) {
-        powerUpState = 0; 
+    Ball(int w, int h, FIBITMAP* i) : Entity(w, h, i) {
+        powerUpState = 0;
         lives = 0;
         direction = 0;
         state = 0;
@@ -229,83 +244,90 @@ public:
 
     void testMoveY(int step) {
         positionY += step;
-        
+
     }
 
 
-    uint8_t detectCollision(staticObject smth, backgroundImageHolder bg) {
+    char detectCollision(staticObject* smth, backgroundImageHolder bg) {
         //[hit from left side of smth OR hit from right side of smth] AND [hit from top of smth OR hit from bottomof smth]
-        if ( 
-            (( positionX >= smth.getX() && positionX <= smth.getX() + smth.getWidth()) || 
-                (positionX + width > smth.getX() && positionX + width < smth.getX() + smth.getWidth() ))
+        if (
+            ((positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) ||
+                (positionX + width > smth->getX() && positionX + width < smth->getX() + smth->getWidth()))
             &&
-            (( positionY >= smth.getY() && positionY <= smth.getY() + smth.getHeight()) || 
-                (positionY + height >= smth.getY() && positionY + height <= smth.getY() + smth.getHeight() ))
-        ){
+            ((positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ||
+                (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()))
+            ) {
             uint8_t col = 0;
 
             //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
             // 
             //if topleft is in collision
-            uint8_t r = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 2];
-            uint8_t g = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 1];
-            uint8_t b = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x)];
+            uint8_t r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 2];
+            uint8_t g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 1];
+            uint8_t b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x)];
 
             uint32_t pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
+                //printf("topleftCol\n");
             }
 
             //if topright is in collision
-            r = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 2];
-            g = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 1];
-            b = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width)];
+            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 2];
+            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 1];
+            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
+                //printf("toprightCol\n");
             }
 
             //if bottomleft is in collision
-            r = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 2];
-            g = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 1];
-            b = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x)];
+            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 2];
+            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 1];
+            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
+                //printf("bottomleftCol\n");
+
             }
 
 
             //if bottomright is in collision
-            r = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 2];
-            g = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 1];
-            b = smth.getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width)];
+            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 2];
+            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 1];
+            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
             }
 
-
-
+            
             if (col) {
-                if (smth.isCoin()) {
+                if (smth->isCoin()) {
+                    printf("c\n\n");
                     return 'c';
                 }
-                else if (smth.isSaveGlass()) {
+                else if (smth->isSaveGlass()) {
+                    printf("s\n\n");
                     return 's';
                 }
-                else if (smth.isUnpassable()) {
+                else if (smth->isUnpassable()) {
+                    printf("u\n\n");
                     return 'u';
                 }
+
             }
             else {
                 return 0;
             }
 
         }
-        
+
 
         return 0;
     }
@@ -349,68 +371,124 @@ public:
 
 };
 
-void sampleLevel() {
-
-}
 
 typedef struct {
     backgroundImageHolder* bg;
     Ball* ball_sprite;
     staticObject* maskObject;
+    staticObject* staticObjectList;
 } callbackDataHolder;
 
 
 //TODO: add more levels
-void levelOne();
-void levelTwo();
 
 
-void drawEntityFromAbsolutePosition(uint32_t* buffer, Entity sprite, backgroundImageHolder bg, staticObject mask) {
-    //NOTE: Absolute Position is relative to framebuffer
-}
+void drawEntity(uint32_t* buffer, Entity* sprite, backgroundImageHolder bg, staticObject* mask) {
 
-void drawEntity(uint32_t* buffer, Entity sprite, backgroundImageHolder bg, staticObject mask) {
     //redraw background at old position of sprite
     // Redraw the background and mask
-    for (int i = 0; i < sprite.getHeight(); i++)
+    for (int i = 0; i < sprite->getHeight(); i++)
     {
-        for (int j = 0; j < sprite.getWidth(); j++)
+        for (int j = 0; j < sprite->getWidth(); j++)
         {
-            uint8_t r = mask.getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j) + 2];
-            uint8_t g = mask.getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j) + 1];
-            uint8_t b = mask.getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j)];;
+            uint8_t r = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 2];
+            uint8_t g = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 1];
+            uint8_t b = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j)];;
             uint32_t pixel = (r << 16) | (g << 8) | b;
-            
+
             //if the pixel at mask is black
             if (!pixel) {
-                r = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j) + 2];
-                g = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j) + 1];
-                b = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite.getYOld()) + 3 * (sprite.getXOld() + bg.bg_x_old + j)];
+                r = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 2];
+                g = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 1];
+                b = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j)];
             }
 
             pixel = (r << 16) | (g << 8) | b;
 
-            
-            buffer[bg.width * (i + bg.bg_y_old + sprite.getYOld()) + (j + sprite.getXOld() + bg.bg_x_old)] = pixel;
+
+            buffer[bg.width * (i + bg.bg_y_old + sprite->getYOld()) + (j + sprite->getXOld() + bg.bg_x_old)] = pixel;
 
         }
     }
 
 
     // Draw the sprite
-    for (int i = 0; i < sprite.getHeight(); i++)
+    for (int i = 0; i < sprite->getHeight(); i++)
     {
-        for (int j = 0; j < sprite.getWidth(); j++)
+        for (int j = 0; j < sprite->getWidth(); j++)
         {
-            uint8_t r = sprite.getImageData()[sprite.getStride() * i + 3 * j + 2];
-            uint8_t g = sprite.getImageData()[sprite.getStride() * i + 3 * j + 1];
-            uint8_t b = sprite.getImageData()[sprite.getStride() * i + 3 * j];
+            uint8_t r = sprite->getImageData()[sprite->getStride() * i + 3 * j + 2];
+            uint8_t g = sprite->getImageData()[sprite->getStride() * i + 3 * j + 1];
+            uint8_t b = sprite->getImageData()[sprite->getStride() * i + 3 * j];
             uint32_t pixel = (r << 16) | (g << 8) | b;
             if (pixel)
-                buffer[bg.width * (i + sprite.getY() + bg.bg_y) + (j + bg.bg_x + sprite.getX())] = pixel;
+                buffer[bg.width * (i + sprite->getY() + bg.bg_y) + (j + bg.bg_x + sprite->getX())] = pixel;
+        }
+    }
+
+
+}
+
+
+void unDrawSpriteToBackground(uint32_t* buffer, Entity* sprite, backgroundImageHolder bg, staticObject* mask) {
+    // Redraw the background and mask
+    for (int i = 0; i < sprite->getHeight(); i++)
+    {
+        for (int j = 0; j < sprite->getWidth(); j++)
+        {
+            uint8_t r = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 2];
+            uint8_t g = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 1];
+            uint8_t b = mask->getImageData()[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j)];;
+            uint32_t pixel = (r << 16) | (g << 8) | b;
+
+            //if the pixel at mask is black
+            if (!pixel) {
+                r = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 2];
+                g = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j) + 1];
+                b = bg.img_data[bg.width * 3 * (i + bg.bg_y_old + sprite->getYOld()) + 3 * (sprite->getXOld() + bg.bg_x_old + j)];
+            }
+
+            pixel = (r << 16) | (g << 8) | b;
+
+
+            buffer[bg.width * (i + bg.bg_y_old + sprite->getYOld()) + (j + sprite->getXOld() + bg.bg_x_old)] = pixel;
+
         }
     }
 }
+
+
+uint8_t convertAbstoRelCoords(Entity* sprite, backgroundImageHolder bg) {
+    //NOTE: Absolute Position is not relative to framebuffer. This function will draw the sprite based from it's absolute position. Specifically, this will transform the absolution position into the framebuffer relative coordinates.
+
+
+    //check if abs position of y is within bounds of framebuffer
+    if ((sprite->getAbsX() >= bg.bg_x && sprite->getAbsX() + sprite->getWidth() <= bg.bg_x + window_width)
+        && (sprite->getAbsY() >= bg.bg_y && sprite->getAbsY() + sprite->getHeight() <= bg.bg_y + window_height)) {
+
+        //convert abs pos to rel pos 
+        sprite->setX(sprite->getAbsX() - bg.bg_x);
+        sprite->setY(sprite->getAbsY() - bg.bg_y);
+
+        return 1;
+
+    }
+
+    return 0;
+
+}
+
+void drawEntityFromAbsPos(uint32_t* buffer, Entity* sprite, backgroundImageHolder bg, staticObject* mask) {
+    if (convertAbstoRelCoords(sprite, bg)) {
+        sprite->updateOldRelCoords();
+
+        drawEntity(buffer, sprite, bg, mask);
+    }
+}
+
+
+
+
 
 //minifb keyboard interrupts prototype
 void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isPressed);
@@ -431,7 +509,8 @@ int main()
     //Entity* entityList = (Entity*)malloc(20 * sizeof(Entity)); //20 items by default 
     // 
     // 
-    staticObject *staticObjectList = new staticObject[20]; //20 items by default
+    staticObject* staticObjectList = new staticObject[staticObjectsCount]; //20 items by default
+
 
     //create an oversized framebuffer
     uint32_t* buffer = (uint32_t*)malloc(wall_bg_width * wall_bg_height * 4);
@@ -440,7 +519,7 @@ int main()
     uint8_t* bg = FreeImage_GetBits(fi_bg);
 
     //BALL CLASS AND SPRITE
-    FIBITMAP* fi_ball = FreeImage_Load(FIF_PNG, "assets/sprite.png"); 
+    FIBITMAP* fi_ball = FreeImage_Load(FIF_PNG, "assets/sprite.png");
     Ball ball_sprite = Ball(sprite_width, sprite_height, fi_ball);
     ball_sprite.setPosition(window_width / 2 - ball_sprite.getWidth() / 2, window_height / 2 - ball_sprite.getHeight() / 2);
 
@@ -465,30 +544,18 @@ int main()
 
     //COIN STUFF ADD (ASSUME COINS ARE FLOATING)
     FIBITMAP* fi_coin = FreeImage_Load(FIF_PNG, "assets/testCoin.png");
+
+
     staticObjectList[0] = staticObject(80, 80, fi_coin);
     staticObjectList[0].isCoin(1);
-    staticObjectList[0].setPosition(300, 100);
+    staticObjectList[0].setAbsX(300);
+    staticObjectList[0].setAbsY(100);
+    convertAbstoRelCoords(&staticObjectList[0], bg_img);
 
-    staticObjectList[0].setYOld(staticObjectList[0].getY());
-    staticObjectList[0].setXOld(staticObjectList[0].getX());
-
-    
-    printf("COIN X: %d, COIN Y: %d, COIN W: %d, COIN H: %d", staticObjectList[0].getX(), staticObjectList[0].getY(), staticObjectList[0].getWidth(), staticObjectList[0].getHeight());
 
 
     //BALL GRAVITY
     int gravity = 1;
-
-
-
-    //DATA TO BE PASSED TO CALLBACK
-    callbackDataHolder callbackData;
-    callbackData.ball_sprite = &ball_sprite;
-    callbackData.bg = &bg_img;
-    callbackData.maskObject = &maskObject;
-
-
-
 
     // Copies the full background to the framebuffer
     for (int i = 0; i < bg_img.width * bg_img.height * 3; i += 3) {
@@ -504,8 +571,16 @@ int main()
         }
     }
 
+    //DATA TO BE PASSED TO CALLBACK
+    callbackDataHolder callbackData;
+    callbackData.ball_sprite = &ball_sprite;
+    callbackData.bg = &bg_img;
+    callbackData.maskObject = &maskObject;
+    callbackData.staticObjectList = staticObjectList;
 
-     //INITIALIZE KEYBOARD INTERRUPTS
+
+
+    //INITIALIZE KEYBOARD INTERRUPTS
     mfb_set_keyboard_callback(window, key_press);
     mfb_set_user_data(window, (void*)&callbackData);
 
@@ -513,10 +588,12 @@ int main()
 
     do {
 
+        /*
+        * TODO : UNCOMMENT THIS TO ENABLE GRAVITY
         ball_sprite.setY(ball_sprite.getY() + gravity);
         //if there is collision reverse this move
-        if (ball_sprite.getY()>= 0 && !ball_sprite.detectCollision(maskObject, bg_img)) {
-            
+        if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(maskObject, bg_img)) {
+
             if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
                 bg_img.bg_y += gravity;
             }
@@ -525,12 +602,26 @@ int main()
             ball_sprite.setY(ball_sprite.getY() - gravity);
         }
 
+        */
 
-        drawEntity(buffer, ball_sprite, bg_img, maskObject);
-        drawEntity(buffer, staticObjectList[0], bg_img, maskObject);
+        //draw other entities first
+        drawEntityFromAbsPos(buffer, &staticObjectList[0], bg_img, &maskObject);
 
-        ball_sprite.setYOld(ball_sprite.getY());
-        ball_sprite.setXOld(ball_sprite.getX());
+
+        //draw ball last
+        drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
+
+
+
+
+
+
+
+
+
+        //set old coordinates
+        ball_sprite.updateOldRelCoords();
+        staticObjectList[0].updateOldRelCoords();
 
         bg_img.bg_x_old = bg_img.bg_x;
         bg_img.bg_y_old = bg_img.bg_y;
@@ -556,109 +647,101 @@ int main()
 
 
 void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isPressed) {
-    callbackDataHolder* callbackData= (callbackDataHolder*)mfb_get_user_data(window);
+    callbackDataHolder* callbackData = (callbackDataHolder*)mfb_get_user_data(window);
     Ball* ball_sprite = callbackData->ball_sprite;
     backgroundImageHolder* bg = callbackData->bg;
     staticObject* maskObject = callbackData->maskObject;
-
+    staticObject* staticObjectList = callbackData->staticObjectList;
 
     if (isPressed) {
-
         //TODO: add conditions to detect collsions and prevent ball from going beyond the window borders
 
         if (key == KB_KEY_LEFT) {
 
-            if (bg->bg_x -10 >= 0 && bg->bg_x <= bg->width - window_width) {
+            if (bg->bg_x - 10 >= 0 && bg->bg_x <= bg->width - window_width) {
                 bg->bg_x -= 10;
 
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_x += 10;
                 }
 
-            }else if (ball_sprite->getX() - 10 >= 0) {
+            }
+            else if (ball_sprite->getX() - 10 >= 0) {
                 ball_sprite->testMoveX(-10);
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveX(10);
                 }
 
             }
-            
-        }
+
+        } //endif left
         else if (key == KB_KEY_RIGHT) {
 
             if (bg->bg_x + 10 <= bg->width - window_width && bg->bg_x + window_width <= bg->width) {
                 bg->bg_x += 10;
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_x -= 10;
                 }
-            }else if (ball_sprite->getX() + 10 <= window_width - ball_sprite->getWidth()) {
+            }
+            else if (ball_sprite->getX() + 10 <= window_width - ball_sprite->getWidth()) {
                 ball_sprite->testMoveX(10);
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveX(-10);
                 }
             }
 
 
-        }
+        } //endif right
         else if (key == KB_KEY_UP) {
 
 
             if (bg->bg_y - 10 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 10;
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_y += 10;
                 }
             }
             else if (ball_sprite->getY() - 10 >= 0) {
                 ball_sprite->testMoveY(-10);
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveY(10);
                 }
             }
 
-        }
+        } //endif up
         else if (key == KB_KEY_DOWN) {
 
             if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
                 bg->bg_y += 10;
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_y -= 10;
+
                 }
             }
             else if (ball_sprite->getY() + 10 <= window_height - ball_sprite->getHeight()) {
                 ball_sprite->testMoveY(10);
-                if (ball_sprite->detectCollision(*maskObject, *bg)) {
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveY(-10);
                 }
             }
 
 
 
+        } //endif down
+        char c = ball_sprite->detectCollision(maskObject, *bg);
+        if (c == 'u') {
+            printf("WOFHSDJKNFOJDSNFKODSJFIOSD");
         }
-        //else if (key == KB_KEY_W) {
-        //    if (bg->bg_y - 10 >= 0 && bg->bg_y <= bg->height - window_height) {
-        //        bg->bg_y -= 10;
+
+
+
+        //for (int i = 0; i < staticObjectsCount; i++) {
+        //    if (ball_sprite->detectCollision(staticObjectList[i], *bg)); {
+        //        if (staticObjectList[i].isCoin()) {
+        //        }
         //    }
+
         //}
-        //else if (key == KB_KEY_A) {
-        //    if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
-        //        bg->bg_y += 10;
-        //    }
-        //}else if (key == KB_KEY_S) {
-        //    if (bg->bg_x - 10 >= 0 && bg->bg_x <= bg->width - window_width) {
-        //        bg->bg_x -= 10;
-
-        //    }
-        //}
-        //else if (key == KB_KEY_D) {
-        //    if (bg->bg_x + 10 <= bg->width - window_width && bg->bg_x + window_width <= bg->width) {
-        //        bg->bg_x += 10;
-        //    }
-        //}
-
-        printf("ball.isCollision value: %c\n", ball_sprite->detectCollision(*maskObject, *bg));
-
-
 
     }
 }
