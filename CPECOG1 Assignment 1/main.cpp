@@ -770,8 +770,13 @@ int main()
         ball_sprite.updateOldRelCoords();
 
 
-        staticObjectList[0].updateOldRelCoords();
-        staticObjectList[1].updateOldRelCoords();
+        for (int i = 0; i < staticObjectsCount; i++) {
+            //draw other entities first
+            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
+                staticObjectList[i].updateOldRelCoords();
+            }
+
+        }
         
 
 
