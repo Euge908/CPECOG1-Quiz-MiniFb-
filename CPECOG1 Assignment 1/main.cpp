@@ -249,6 +249,7 @@ public:
 
 
     char detectCollision(staticObject* smth, backgroundImageHolder bg) {
+        
         //[hit from left side of smth OR hit from right side of smth] AND [hit from top of smth OR hit from bottomof smth]
         if (
             ((positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) ||
@@ -257,6 +258,8 @@ public:
             ((positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ||
                 (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()))
             ) {
+            printf("PASSED\n");
+
             uint8_t col = 0;
 
             //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
@@ -323,6 +326,7 @@ public:
 
             }
             else {
+                printf("no col: 0\n");
                 return 0;
             }
 
@@ -643,13 +647,13 @@ int main()
 
 
 
-
-
-
 void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isPressed) {
+
     callbackDataHolder* callbackData = (callbackDataHolder*)mfb_get_user_data(window);
     Ball* ball_sprite = callbackData->ball_sprite;
+    
     backgroundImageHolder* bg = callbackData->bg;
+    
     staticObject* maskObject = callbackData->maskObject;
     staticObject* staticObjectList = callbackData->staticObjectList;
 
@@ -728,20 +732,10 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
         } //endif down
-        char c = ball_sprite->detectCollision(maskObject, *bg);
-        if (c == 'u') {
-            printf("WOFHSDJKNFOJDSNFKODSJFIOSD");
-        }
 
 
-
-        //for (int i = 0; i < staticObjectsCount; i++) {
-        //    if (ball_sprite->detectCollision(staticObjectList[i], *bg)); {
-        //        if (staticObjectList[i].isCoin()) {
-        //        }
-        //    }
-
-        //}
+        char c = ball_sprite->detectCollision(&staticObjectList[0], *bg);
+        printf("Stuff: %c\n", c);
 
     }
 }

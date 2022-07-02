@@ -29,7 +29,7 @@ See https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md for edit
 * User control of ball
 * Terrain mask works 
 * UML Diagram works-ish (is now a bit outdated)
-* Coin Positioning now works
+* Coin Positioning now works, but further testing is needed to check if there are bugs
 
 ## New Issues:
 * Collision error code prints out perfectly, but it doesn't return properly in the callback function
