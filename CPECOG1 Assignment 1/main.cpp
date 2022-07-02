@@ -9,8 +9,8 @@
 #define wall_bg_width 2704
 #define wall_bg_height 1628
 
-#define window_width 800
-#define window_height 600
+#define window_width 1280
+#define window_height 720
 
 #define sprite_width 100
 #define sprite_height 100
@@ -502,6 +502,7 @@ typedef struct {
     Ball* ball_sprite;
     staticObject* maskObject;
     staticObject* staticObjectList;
+    uint32_t* buffer;
 } callbackDataHolder;
 
 
@@ -718,7 +719,7 @@ int main()
     callbackData.bg = &bg_img;
     callbackData.maskObject = &maskObject;
     callbackData.staticObjectList = staticObjectList;
-
+    callbackData.buffer = buffer;
 
 
     //INITIALIZE KEYBOARD INTERRUPTS
@@ -745,10 +746,14 @@ int main()
 
         */
 
-        //draw other entities first
-        drawEntityFromAbsPos(buffer, &staticObjectList[0], bg_img, &maskObject);
-        drawEntityFromAbsPos(buffer, &staticObjectList[1], bg_img, &maskObject);
+        
+        for (int i = 0; i < staticObjectsCount; i++) {
+            //draw other entities first
+            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
+                drawEntityFromAbsPos(buffer, &staticObjectList[i], bg_img, &maskObject);
+            }
 
+        }
 
         //draw ball last
         drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
@@ -767,7 +772,7 @@ int main()
 
         staticObjectList[0].updateOldRelCoords();
         staticObjectList[1].updateOldRelCoords();
-
+        
 
 
 
@@ -801,6 +806,8 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
     
     staticObject* maskObject = callbackData->maskObject;
     staticObject* staticObjectList = callbackData->staticObjectList;
+    uint32_t* buffer = callbackData->buffer;
+
 
     if (isPressed) {
         //TODO: add conditions to detect collsions and prevent ball from going beyond the window borders
@@ -873,14 +880,22 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                     ball_sprite->testMoveY(-10);
                 }
             }
+
+
+
+            //TODO: if stuff happens
             printf("prior to delete:\n");
+            unDrawSpriteToBackground(buffer, &staticObjectList[0], *bg, maskObject);
             staticObjectList[0].printAttributes();
             deleteStaticObject(0, staticObjectList);
             printf("after delete:\n");
             staticObjectList[0].printAttributes();
-            
+
         } //endif down
             
+
+
+        //TODO: for every item in object list that is in the framebuffer, check if collision
         printf("Coin Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[0], *bg));
         printf("Enemy Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[1], *bg));
 
