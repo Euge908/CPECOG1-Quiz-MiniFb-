@@ -150,19 +150,29 @@ public:
 
 class staticObject : public Entity {
 protected:
-    uint8_t coin, SaveGlass, unpassable;
+    uint8_t coin, SaveGlass, unpassable, enemy;
 
 public:
     staticObject() : Entity() {
-        coin = 0; SaveGlass = 0; unpassable = 0;
+        coin = 0; SaveGlass = 0; unpassable = 0; enemy = 0;
     }
 
     staticObject(int w, int h, FIBITMAP* i) : Entity(w, h, i) {
         coin = 0;
         SaveGlass = 0;
         unpassable = 0;
+        enemy = 0;
     }
 
+    //enemy methods
+    uint8_t isEnemy() {
+        return enemy;
+    }
+
+    uint8_t isEnemy(uint8_t val) {
+        enemy = val;
+        return enemy;
+    }
 
 
     //save glass methods
@@ -314,6 +324,9 @@ public:
                 if (pixel) {
                     return 'u';
                 }
+            }
+            else if (smth->isEnemy()) {
+                return 'e';
             }
 
             return 0;
@@ -656,6 +669,7 @@ int main()
 
     //COIN STUFF ADD (ASSUME COINS ARE FLOATING)
     FIBITMAP* fi_coin = FreeImage_Load(FIF_PNG, "assets/testCoin.png");
+    FIBITMAP* fi_enemy = FreeImage_Load(FIF_PNG, "assets/sampleEnemy.png");
 
 
     staticObjectList[0] = staticObject(80, 80, fi_coin);
@@ -663,6 +677,13 @@ int main()
     staticObjectList[0].setAbsX(300);
     staticObjectList[0].setAbsY(100);
     convertAbstoRelCoords(&staticObjectList[0], bg_img);
+
+
+    staticObjectList[1] = staticObject(125, 250, fi_enemy);
+    staticObjectList[1].isEnemy(1);
+    staticObjectList[1].setAbsX(500);
+    staticObjectList[1].setAbsY(50);
+    convertAbstoRelCoords(&staticObjectList[1], bg_img);
 
 
 
@@ -718,6 +739,7 @@ int main()
 
         //draw other entities first
         drawEntityFromAbsPos(buffer, &staticObjectList[0], bg_img, &maskObject);
+        drawEntityFromAbsPos(buffer, &staticObjectList[1], bg_img, &maskObject);
 
 
         //draw ball last
@@ -733,7 +755,14 @@ int main()
 
         //set old coordinates
         ball_sprite.updateOldRelCoords();
+
+
         staticObjectList[0].updateOldRelCoords();
+        staticObjectList[1].updateOldRelCoords();
+
+
+
+
 
         bg_img.bg_x_old = bg_img.bg_x;
         bg_img.bg_y_old = bg_img.bg_y;
@@ -842,6 +871,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
         } //endif down
             
         printf("Coin Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[0], *bg));
+        printf("Enemy Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[1], *bg));
 
         
 
