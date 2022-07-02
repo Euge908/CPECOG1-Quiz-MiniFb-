@@ -612,7 +612,15 @@ void drawEntityFromAbsPos(uint32_t* buffer, Entity* sprite, backgroundImageHolde
 }
 
 
-
+void deleteStaticObject(int index, staticObject* staticObjectList) {
+    int i, newIndex = 0;
+    for (i = 0; i < staticObjectsCount; i++) {
+        if (i != index) {
+            staticObjectList[newIndex] = staticObjectList[i];
+            newIndex++;
+        }
+    }
+}
 
 
 //minifb keyboard interrupts prototype
@@ -865,9 +873,12 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                     ball_sprite->testMoveY(-10);
                 }
             }
-
-
-
+            printf("prior to delete:\n");
+            staticObjectList[0].printAttributes();
+            deleteStaticObject(0, staticObjectList);
+            printf("after delete:\n");
+            staticObjectList[0].printAttributes();
+            
         } //endif down
             
         printf("Coin Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[0], *bg));
