@@ -306,7 +306,7 @@ public:
                 col = 1;
             }
 
-            
+
             if (col) {
                 if (smth->isCoin()) {
                     printf("c\n\n");
