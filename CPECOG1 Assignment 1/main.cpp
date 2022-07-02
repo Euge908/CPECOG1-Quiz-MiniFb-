@@ -645,10 +645,6 @@ int main()
 
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8eedc50 (gravity set from 10 to 20)
 void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isPressed) {
 
     callbackDataHolder* callbackData = (callbackDataHolder*)mfb_get_user_data(window);
