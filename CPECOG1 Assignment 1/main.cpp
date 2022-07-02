@@ -272,7 +272,7 @@ public:
             uint32_t pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                //printf("topleftCol\n");
+                printf("topleftCol\n");
             }
 
             //if topright is in collision
@@ -283,7 +283,7 @@ public:
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                //printf("toprightCol\n");
+                printf("toprightCol\n");
             }
 
             //if bottomleft is in collision
@@ -294,7 +294,7 @@ public:
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                //printf("bottomleftCol\n");
+                printf("bottomleftCol\n");
 
             }
 
@@ -307,6 +307,7 @@ public:
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
+                printf("bottomrightCol\n");
             }
 
 
@@ -559,7 +560,7 @@ int main()
 
 
     //BALL GRAVITY
-    int gravity = 1;
+    int gravity = 2;
 
     // Copies the full background to the framebuffer
     for (int i = 0; i < bg_img.width * bg_img.height * 3; i += 3) {
@@ -592,11 +593,11 @@ int main()
 
     do {
 
-        /*
-        * TODO : UNCOMMENT THIS TO ENABLE GRAVITY
+        
+        //* TODO : UNCOMMENT THIS TO ENABLE GRAVITY
         ball_sprite.setY(ball_sprite.getY() + gravity);
         //if there is collision reverse this move
-        if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(maskObject, bg_img)) {
+        if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(&maskObject, bg_img)) {
 
             if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
                 bg_img.bg_y += gravity;
@@ -606,8 +607,6 @@ int main()
             ball_sprite.setY(ball_sprite.getY() - gravity);
         }
 
-        */
-
         //draw other entities first
         drawEntityFromAbsPos(buffer, &staticObjectList[0], bg_img, &maskObject);
 
@@ -615,7 +614,7 @@ int main()
         //draw ball last
         drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
 
-
+        //printf("Height %d", bg_img.bg_y);
 
 
 
@@ -646,7 +645,10 @@ int main()
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8eedc50 (gravity set from 10 to 20)
 void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isPressed) {
 
     callbackDataHolder* callbackData = (callbackDataHolder*)mfb_get_user_data(window);
@@ -699,16 +701,16 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
         else if (key == KB_KEY_UP) {
 
 
-            if (bg->bg_y - 10 >= 0 && bg->bg_y <= bg->height - window_height) {
-                bg->bg_y -= 10;
+            if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
+                bg->bg_y -= 20;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
-                    bg->bg_y += 10;
+                    bg->bg_y += 20;
                 }
             }
-            else if (ball_sprite->getY() - 10 >= 0) {
-                ball_sprite->testMoveY(-10);
+            else if (ball_sprite->getY() - 20 >= 0) {
+                ball_sprite->testMoveY(-20);
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
-                    ball_sprite->testMoveY(10);
+                    ball_sprite->testMoveY(20);
                 }
             }
 
