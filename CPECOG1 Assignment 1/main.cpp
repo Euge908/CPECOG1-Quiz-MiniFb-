@@ -284,7 +284,7 @@ public:
 
             uint32_t pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
-                col = 1;
+                //col = 1;
                 //printf("topleftCol\n");
             }
 
@@ -295,7 +295,7 @@ public:
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
-                col = 1;
+                //col = 1;
                 //printf("toprightCol\n");
             }
 
@@ -306,7 +306,7 @@ public:
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
-                col = 1;
+                //col = 1;
                 //printf("bottomleftCol\n");
 
                 }
@@ -319,7 +319,7 @@ public:
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
-                col = 1;
+                //col = 1;
             }
 
             return 0;
