@@ -255,6 +255,9 @@ public:
     char detectCollision(staticObject* smth, backgroundImageHolder bg) {
         
         //[hit from left side of smth OR hit from right side of smth] AND [hit from top of smth OR hit from bottomof smth]
+
+
+
         if (
             ((positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) ||
                 (positionX + width > smth->getX() && positionX + width < smth->getX() + smth->getWidth()))
@@ -262,80 +265,186 @@ public:
             ((positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ||
                 (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()))
             ) {
-            printf("PASSED\n");
-
-            uint8_t col = 0;
-
+           
             //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
-            // 
-            //if topleft is in collision
-            uint8_t r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 2];
-            uint8_t g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 1];
-            uint8_t b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x)];
+
+
+
+            if (smth->isCoin()) {
+                return 'c';
+            }
+            else if (smth->isSaveGlass()) {
+                return 's';
+            }
+            else if (smth->isUnpassable()) {
+                //if topleft is in collision
+                uint8_t r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 2];
+                uint8_t g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 1];
+                uint8_t b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x)];
 
             uint32_t pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                printf("topleftCol\n");
+                //printf("topleftCol\n");
             }
 
-            //if topright is in collision
-            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 2];
-            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 1];
-            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width)];
+                //if topright is in collision
+                r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 2];
+                g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 1];
+                b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                printf("toprightCol\n");
+                //printf("toprightCol\n");
             }
 
-            //if bottomleft is in collision
-            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 2];
-            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 1];
-            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x)];
+                //if bottomleft is in collision
+                r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 2];
+                g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 1];
+                b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                printf("bottomleftCol\n");
+                //printf("bottomleftCol\n");
 
-            }
+                }
 
 
-            //if bottomright is in collision
-            r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 2];
-            g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 1];
-            b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width)];
+                //if bottomright is in collision
+                r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 2];
+                g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 1];
+                b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width)];
 
             pixel = (r << 16) | (g << 8) | b;
             if (pixel) {
                 col = 1;
-                printf("bottomrightCol\n");
             }
 
+            return 0;
 
-            if (col) {
-                if (smth->isCoin()) {
-                    printf("c\n\n");
-                    return 'c';
-                }
-                else if (smth->isSaveGlass()) {
-                    printf("s\n\n");
-                    return 's';
-                }
-                else if (smth->isUnpassable()) {
-                    printf("u\n\n");
-                    return 'u';
-                }
 
-            }
-            else {
-                printf("no col: 0\n");
-                return 0;
-            }
+           
 
         }
+
+
+        return 0;
+
+        
+        //uint8_t collision_flag = 0;
+
+
+        //if ( (positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) &&
+        //        (positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ) {
+        //    //if top left corner is in collision
+        //    collision_flag = 1;
+        //}
+        //else if ( (positionX + width >= smth->getX() && positionX + width <= smth->getX() + smth->getWidth()) && (positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight())) {
+        //    //if top right corner is in collision
+        //    collision_flag = 1;
+        //}
+        //else if ( (positionX >= smth->getX () && positionX <= smth->getX() + smth->getWidth()) && (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()) ) {
+        //    //if bottom left corner is in collision
+        //    collision_flag = 1;
+        //}
+        //else if ((positionX + width >= smth->getX() && positionX + width <= smth->getX() + smth->getWidth()) && (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight())) {
+        //    //if bottom right corner is in collision
+        //    collision_flag = 1;
+        //}
+
+
+
+        //if (collision_flag) {
+        //    if (smth->isCoin()) {
+        //        return 'c';
+        //    }
+        //    else if (smth->isSaveGlass()) {
+        //        return 's';
+        //    }
+        //    else if (smth->isUnpassable()) {
+
+
+        //        return 'u';
+        //    }
+        //}
+
+        //return 0;
+            
+
+
+
+
+
+
+
+        //if (
+        //    ((positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) ||
+        //        (positionX + width > smth->getX() && positionX + width < smth->getX() + smth->getWidth()))
+        //    &&
+        //    ((positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ||
+        //        (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()))
+        //    ) {
+        //    
+        //    uint8_t col = 0;
+        //    TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
+        //     
+        //    if topleft is in collision
+        //    uint8_t r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 2];
+        //    uint8_t g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x) + 1];
+        //    uint8_t b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x)];
+        //    uint32_t pixel = (r << 16) | (g << 8) | b;
+        //    if (pixel) {
+        //        col = 1;
+        //        printf("topleftCol\n");
+        //    }
+        //    if topright is in collision
+        //    r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 2];
+        //    g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width) + 1];
+        //    b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY()) + 3 * (getX() + bg.bg_x + width)];
+        //    pixel = (r << 16) | (g << 8) | b;
+        //    if (pixel) {
+        //        col = 1;
+        //        printf("toprightCol\n");
+        //    }
+        //    if bottomleft is in collision
+        //    r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 2];
+        //    g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x) + 1];
+        //    b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x)];
+        //    pixel = (r << 16) | (g << 8) | b;
+        //    if (pixel) {
+        //        col = 1;
+        //        printf("bottomleftCol\n");
+        //    }
+        //    if bottomright is in collision
+        //    r = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 2];
+        //    g = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width) + 1];
+        //    b = smth->getImageData()[bg.width * 3 * (bg.bg_y + getY() + height) + 3 * (getX() + bg.bg_x + width)];
+        //    pixel = (r << 16) | (g << 8) | b;
+        //    if (pixel) {
+        //        col = 1;
+        //    }
+        //    if (col) {
+        //        if (smth->isCoin()) {
+        //            printf("c\n\n");
+        //            return 'c';
+        //        }
+        //        else if (smth->isSaveGlass()) {
+        //            printf("s\n\n");
+        //            return 's';
+        //        }
+        //        else if (smth->isUnpassable()) {
+        //            printf("u\n\n");
+        //            return 'u';
+        //        }
+        //    }
+        //    else {
+        //        printf("no col: 0\n");
+        //        return 0;
+        //    }
+
+        //}
 
 
         return 0;
@@ -745,10 +854,10 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
         } //endif down
+            
+        printf("Coin Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[0], *bg));
 
-
-        char c = ball_sprite->detectCollision(&staticObjectList[0], *bg);
-        printf("Stuff: %c\n", c);
+        
 
     }
 }
