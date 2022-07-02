@@ -210,6 +210,8 @@ private:
     int direction;
     int state;
     int movementSpeed;
+    int jump;
+    int air;
 
     uint8_t dead;
     uint8_t moving;
@@ -224,6 +226,8 @@ public:
         direction = 0;
         state = 0;
         movementSpeed = 0;
+        jump = 0;
+        air = 0;
         dead = 0;
         moving = 0;
         hitEnemy = 0;
@@ -337,9 +341,22 @@ public:
         return 0;
     }
 
-    uint8_t isJumping() {
+    void setJump(int x) {
         //TODO: smth about callbacks
-        return 0;
+        jump = x;
+        //air = 1;
+        //return 1;
+    }
+
+    uint8_t getJump() {
+        return jump;
+    }
+
+    uint8_t onFloor() {
+        //TODO: smth about callbacks
+        jump = 0;
+        air = 0;
+        return jump;
     }
 
     uint8_t isDead() {
@@ -584,7 +601,6 @@ int main()
     callbackData.staticObjectList = staticObjectList;
 
 
-
     //INITIALIZE KEYBOARD INTERRUPTS
     mfb_set_keyboard_callback(window, key_press);
     mfb_set_user_data(window, (void*)&callbackData);
@@ -694,9 +710,8 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
         } //endif right
-        else if (key == KB_KEY_UP) {
-
-
+        else if (key == KB_KEY_UP && !(ball_sprite->getJump())) {
+            ball_sprite->setJump(1);
             if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 20;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
