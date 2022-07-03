@@ -216,15 +216,15 @@ public:
 class Ball : public Entity {
 private:
     int powerUpState; //ball size
-    int lives;
+    uint8_t lives;
     int direction;
     int state;
     int movementSpeed;
+    uint8_t saveX, saveY;
 
     uint8_t dead;
     uint8_t moving;
     uint8_t hitEnemy;
-
 
 
 public:
@@ -237,7 +237,17 @@ public:
         dead = 0;
         moving = 0;
         hitEnemy = 0;
+        saveX = 0; saveY = 0;
     }
+
+    uint8_t getLives() {
+        return lives;
+    }
+
+    void setLives(uint8_t val) {
+        lives = val;
+    }
+
 
     void move() {
         if (direction) {
@@ -503,6 +513,7 @@ typedef struct {
     staticObject* maskObject;
     staticObject* staticObjectList;
     uint32_t* buffer;
+    uint8_t* score;
 } callbackDataHolder;
 
 
@@ -637,7 +648,7 @@ int main()
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Variable Declarations~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     uint8_t paused = 0, gameOver = 0;
-    int score = 0;
+    uint8_t score = 0;
 
     //TODO: replace this with enemy object list instead and add staticObjectList
     //Entity* entityList = (Entity*)malloc(20 * sizeof(Entity)); //20 items by default 
@@ -659,6 +670,8 @@ int main()
 
     ball_sprite.setYOld(ball_sprite.getY());
     ball_sprite.setXOld(ball_sprite.getX());
+    ball_sprite.setLives(3);
+
 
     //BACKGROUND IMG STUFF
     backgroundImageHolder bg_img;
@@ -681,6 +694,9 @@ int main()
     FIBITMAP* fi_enemy = FreeImage_Load(FIF_PNG, "assets/sampleEnemy.png");
 
 
+
+
+    //TODO: put this in a function instead
     staticObjectList[0] = staticObject(80, 80, fi_coin);
     staticObjectList[0].isCoin(1);
     staticObjectList[0].setAbsX(300);
@@ -720,7 +736,7 @@ int main()
     callbackData.maskObject = &maskObject;
     callbackData.staticObjectList = staticObjectList;
     callbackData.buffer = buffer;
-
+    callbackData.score = &score;
 
     //INITIALIZE KEYBOARD INTERRUPTS
     mfb_set_keyboard_callback(window, key_press);
@@ -764,11 +780,11 @@ int main()
 
 
 
-
+        printf("score: %d\n", score);
+        printf("life: %d\n", ball_sprite.getLives());
 
         //set old coordinates
         ball_sprite.updateOldRelCoords();
-
 
         for (int i = 0; i < staticObjectsCount; i++) {
             //draw other entities first
@@ -813,6 +829,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
     staticObject* staticObjectList = callbackData->staticObjectList;
     uint32_t* buffer = callbackData->buffer;
 
+    uint8_t* score = callbackData->score;
 
     if (isPressed) {
         //TODO: add conditions to detect collsions and prevent ball from going beyond the window borders
@@ -888,21 +905,38 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
 
-            //TODO: if stuff happens
-            printf("prior to delete:\n");
-            unDrawSpriteToBackground(buffer, &staticObjectList[0], *bg, maskObject);
-            staticObjectList[0].printAttributes();
-            deleteStaticObject(0, staticObjectList);
-            printf("after delete:\n");
-            staticObjectList[0].printAttributes();
 
         } //endif down
             
 
 
         //TODO: for every item in object list that is in the framebuffer, check if collision
-        printf("Coin Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[0], *bg));
-        printf("Enemy Collision Status: %c\n\n", ball_sprite->detectCollision(&staticObjectList[1], *bg));
+        for (int i = 0; i < staticObjectsCount; i++) {
+            //draw other entities first
+            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
+                char col = ball_sprite->detectCollision(&staticObjectList[0], *bg);
+
+                if (col == 'c') {
+                    //if coin collision
+                    unDrawSpriteToBackground(buffer, &staticObjectList[i], *bg, maskObject);
+                    deleteStaticObject(i, staticObjectList);
+
+                    //TODO: Increment Score
+                    *score = *score + 1;
+                }
+                else if (col == 'e') {
+                    //TODO: implement a die function, where the ball goes to the last save location
+                    printf("\n\n\n enemy hit\n\n\n");
+                    uint8_t lifeCount = ball_sprite->getLives() - 1;
+                    ball_sprite->setLives(lifeCount - 1);
+                    ball_sprite->setX(0);
+                    ball_sprite->setY(0);
+
+
+                }
+            }
+
+        }
 
         
 
