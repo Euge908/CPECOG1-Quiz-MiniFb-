@@ -779,9 +779,9 @@ int main()
 
 
 
-
-        printf("score: %d\n", score);
-        printf("life: %d\n", ball_sprite.getLives());
+        //TODO: Reenable this to print stuff
+        //printf("score: %d\n", score);
+        //printf("life: %d\n", ball_sprite.getLives());
 
         //set old coordinates
         ball_sprite.updateOldRelCoords();
@@ -914,7 +914,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
         for (int i = 0; i < staticObjectsCount; i++) {
             //draw other entities first
             if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
-                char col = ball_sprite->detectCollision(&staticObjectList[0], *bg);
+                char col = ball_sprite->detectCollision(&staticObjectList[i], *bg);
 
                 if (col == 'c') {
                     //if coin collision
@@ -926,7 +926,6 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                 }
                 else if (col == 'e') {
                     //TODO: implement a die function, where the ball goes to the last save location
-                    printf("\n\n\n enemy hit\n\n\n");
                     uint8_t lifeCount = ball_sprite->getLives() - 1;
                     ball_sprite->setLives(lifeCount - 1);
                     ball_sprite->setX(0);
