@@ -33,7 +33,7 @@ typedef struct {
 class Entity {
 protected:
     //positionX and positionY are relative coordinates to the framebuffer
-    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY;
+    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY, jump, jumpLimit, air;
     uint8_t* image_data;
 public:
     Entity() {
@@ -46,6 +46,9 @@ public:
         positionXOld = 0;
         absPositionX = 0;
         absPositionY = 0;
+        jump = 0;
+        jumpLimit = 0;
+        air = 0;
 
 
     }
@@ -210,8 +213,6 @@ private:
     int direction;
     int state;
     int movementSpeed;
-    int jump;
-    int air;
 
     uint8_t dead;
     uint8_t moving;
@@ -226,8 +227,6 @@ public:
         direction = 0;
         state = 0;
         movementSpeed = 0;
-        jump = 0;
-        air = 0;
         dead = 0;
         moving = 0;
         hitEnemy = 0;
@@ -342,14 +341,27 @@ public:
     }
 
     void setJump(int x) {
-        //TODO: smth about callbacks
         jump = x;
-        //air = 1;
-        //return 1;
+    }
+
+    void setJumpLimit(int x) {
+        jumpLimit = x;
+    }
+
+    void setAir(int x) {
+        air = x;
     }
 
     uint8_t getJump() {
         return jump;
+    }
+
+    uint8_t getJumpLimit() {
+        return jumpLimit;
+    }
+
+    uint8_t getAir() {
+        return air;
     }
 
     uint8_t onFloor() {
@@ -614,14 +626,50 @@ int main()
         ball_sprite.setY(ball_sprite.getY() + gravity);
         //if there is collision reverse this move
         if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(&maskObject, bg_img)) {
-
+            ball_sprite.setAir(1);
+            //ball_sprite.setJump(1);
             if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
                 bg_img.bg_y += gravity;
             }
         }
         else {
+            //printf("Ball landed");
+            ball_sprite.setJump(0);
+            ball_sprite.setAir(0);
+            ball_sprite.setJumpLimit(0);
+            
             ball_sprite.setY(ball_sprite.getY() - gravity);
+
         }
+
+        if (ball_sprite.getJump()) {
+            if (!(ball_sprite.getJumpLimit() >= 10)) {
+                ball_sprite.setJumpLimit(ball_sprite.getJumpLimit() + 1);
+            }
+            
+            //ball_sprite.setJumpLimit(1);
+
+            if (bg_img.bg_y - 20 >= 0 && bg_img.bg_y <= bg_img.height - window_height && !(ball_sprite.getJumpLimit() >= 10)) {
+                bg_img.bg_y -= 20;
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    bg_img.bg_y += 20;
+                }
+            }
+            else if (ball_sprite.getY() - 20 >= 0 && !(ball_sprite.getJumpLimit() >= 10)) {
+                ball_sprite.testMoveY(-20);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveY(20);
+                }
+            }
+            //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
+            //if (ball_sprite.getJumpLimit() >= 100) {
+            //    ball_sprite.setJumpLimit(-100);
+            //}
+        }
+
+        
+
+        printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
 
         //draw other entities first
         drawEntityFromAbsPos(buffer, &staticObjectList[0], bg_img, &maskObject);
@@ -710,7 +758,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
         } //endif right
-        else if (key == KB_KEY_UP && !(ball_sprite->getJump())) {
+        else if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
             ball_sprite->setJump(1);
             if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 20;

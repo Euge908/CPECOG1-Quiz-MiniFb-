@@ -1,8 +1,2 @@
 ﻿  main.cpp
-  LINK : C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\CPECOG1 Assignment 1.exe not found or not built by the last incremental link; performing full link
-minifb.lib(WinMiniFB.c.obj) : warning LNK4099: PDB 'minifb.pdb' was not found with 'minifb.lib(WinMiniFB.c.obj)' or at 'C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\minifb.pdb'; linking object as if no debug info
-minifb.lib(MiniFB_common.c.obj) : warning LNK4099: PDB 'minifb.pdb' was not found with 'minifb.lib(MiniFB_common.c.obj)' or at 'C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\minifb.pdb'; linking object as if no debug info
-minifb.lib(MiniFB_timer.c.obj) : warning LNK4099: PDB 'minifb.pdb' was not found with 'minifb.lib(MiniFB_timer.c.obj)' or at 'C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\minifb.pdb'; linking object as if no debug info
-minifb.lib(MiniFB_internal.c.obj) : warning LNK4099: PDB 'minifb.pdb' was not found with 'minifb.lib(MiniFB_internal.c.obj)' or at 'C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\minifb.pdb'; linking object as if no debug info
-minifb.lib(MiniFB_GL.c.obj) : warning LNK4099: PDB 'minifb.pdb' was not found with 'minifb.lib(MiniFB_GL.c.obj)' or at 'C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\minifb.pdb'; linking object as if no debug info
   CPECOG1 Assignment 1.vcxproj -> C:\Lance\College\8th_Term\CPECOG1\Project\CPECOG1 Assignment 1\x64\Debug\CPECOG1 Assignment 1.exe
