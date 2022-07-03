@@ -2,10 +2,3 @@ assets/irrelevant
 assets/quiz
 .vs
 x64
-lib
-include
-CPECOG1 Assignment 1.sln
-CPECOG1 Assignment 1.vcxproj
-CPECOG1 Assignment 1.vcxproj.filters
-CPECOG1 Assignment 1.vcxproj.user
-FreeImage.dll
