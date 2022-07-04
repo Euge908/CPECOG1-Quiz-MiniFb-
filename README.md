@@ -29,6 +29,7 @@ See https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md for edit
 * Terrain mask works 
 * UML Diagram works-ish (is now a bit outdated)
 * Coin Positioning now works, but further testing is needed to check if there are bugs
+* ~~Absolute positioning of objects~~
 * ~~Coin positioning is buggy~~ (fixed)
 * ~~Coin collection does not work~~ (fixed)
 * ~~Ball cannot collect coin~~ (fixed)
