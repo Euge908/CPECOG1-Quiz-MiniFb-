@@ -1,5 +1,4 @@
 #pragma once
-#include <stdio.h>
 #include "ball.h"
 #include "StaticObject.h"
 #include "Entity.h"
@@ -16,7 +15,7 @@
 #define staticObjectsCount 20
 
 
-typedef struct {
+typedef struct backgroundImageHolder {
     int bg_x;
     int bg_y;
     int bg_x_old;
@@ -29,7 +28,6 @@ typedef struct {
 
 
 typedef struct {
-    Ball
     backgroundImageHolder *bg;
     Ball *ball_sprite;
     staticObject *maskObject;

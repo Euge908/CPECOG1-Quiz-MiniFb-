@@ -5,8 +5,6 @@
 #include "include/MiniFB_cpp.h"
 #include "include/FreeImage.h"
 #include <string.h>
-
-
 #include "Entity.h"
 #include "StaticObject.h"
 #include "DrawingRelated.h"
