@@ -1,3 +1,7 @@
+//fix all //qckui fxi//qcak docktro //languf ftish
+
+
+
 //NOTE: Resolve all TODO comments after polishing the code
 
 
@@ -637,7 +641,9 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
                 printf("Character died once");
 
                 uint8_t lifeCount = ball_sprite->getLives() - 1;
-                ball_sprite->setLives(lifeCount);
+                if (lifeCount >= 0) {
+                    ball_sprite->setLives(lifeCount);
+                }
             }
         }
 
