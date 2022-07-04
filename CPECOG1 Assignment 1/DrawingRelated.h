@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #include "ball.h"
 #include "StaticObject.h"
 #include "Entity.h"
@@ -28,6 +29,7 @@ typedef struct {
 
 
 typedef struct {
+    Ball
     backgroundImageHolder *bg;
     Ball *ball_sprite;
     staticObject *maskObject;
