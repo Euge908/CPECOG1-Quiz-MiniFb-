@@ -689,6 +689,22 @@ int main()
     ball_sprite.setLives(3);
 
 
+    //OVERHEAD DISPLAY
+    //TODO: fill out rest of assets
+    FIBITMAP* fi_num0 = FreeImage_Load(FIF_PNG, "assets/num0.png");
+    FIBITMAP* fi_num1 = FreeImage_Load(FIF_PNG, "assets/num1.png");
+    FIBITMAP* fi_num2 = FreeImage_Load(FIF_PNG, "assets/num2.png");
+    FIBITMAP* fi_num3 = FreeImage_Load(FIF_PNG, "assets/num3.png");
+    FIBITMAP* fi_num4 = FreeImage_Load(FIF_PNG, "assets/num4.png");
+    FIBITMAP* fi_num5 = FreeImage_Load(FIF_PNG, "assets/num5.png");
+    FIBITMAP* fi_num6 = FreeImage_Load(FIF_PNG, "assets/num6.png");
+    FIBITMAP* fi_num7 = FreeImage_Load(FIF_PNG, "assets/num7.png");
+    FIBITMAP* fi_num8 = FreeImage_Load(FIF_PNG, "assets/num8.png");
+    FIBITMAP* fi_num9 = FreeImage_Load(FIF_PNG, "assets/num9.png");
+    //Ball ball_sprite = Ball(sprite_width, sprite_height, fi_ball);
+    //ball_sprite.setPosition(window_width / 2 - ball_sprite.getWidth() / 2, window_height / 2 - ball_sprite.getHeight() / 2);
+
+
     //BACKGROUND IMG STUFF
     backgroundImageHolder bg_img;
     bg_img.bg_x = 0;
