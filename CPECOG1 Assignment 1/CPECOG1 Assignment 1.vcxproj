@@ -140,14 +140,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="DrawingRelated.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="StaticObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="DrawingRelated.h" />
     <ClInclude Include="include\FreeImage.h" />
     <ClInclude Include="include\MiniFB.h" />
     <ClInclude Include="include\MiniFB_cpp.h" />
     <ClInclude Include="include\MiniFB_enums.h" />
     <ClInclude Include="include\MiniFB_ios.h" />
+    <ClInclude Include="StaticObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
