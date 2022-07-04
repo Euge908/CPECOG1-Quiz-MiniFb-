@@ -33,7 +33,7 @@ typedef struct {
 class Entity {
 protected:
     //positionX and positionY are relative coordinates to the framebuffer
-    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY, jump, jumpLimit, air;
+    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY, jump, jumpLimit, air, leftState, upState, rightState;
     uint8_t* image_data;
 public:
     Entity() {
@@ -49,11 +49,13 @@ public:
         jump = 0;
         jumpLimit = 0;
         air = 0;
-
+        leftState = 0;
+        upState = 0;
+        rightState = 0;
 
     }
     void printAttributes() {
-        printf("positionX: %d, positionY: %d, width: %d, height: %d, stride: %d, positionYOld: %d, positionXOld: %d, absPositionX: %d, absPositionY: %d\n\n", positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY);
+        //printf("positionX: %d, positionY: %d, width: %d, height: %d, stride: %d, positionYOld: %d, positionXOld: %d, absPositionX: %d, absPositionY: %d\n\n", positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY);
     }
 
 
@@ -272,8 +274,6 @@ public:
 
 
     char detectCollision(staticObject* smth, backgroundImageHolder bg) {
-        
-        //TODO: Fix bug here about relative position
         // 
         // 
         //[hit from left side of smth OR hit from right side of smth] AND [hit from top of smth OR hit from bottomof smth]
@@ -284,7 +284,7 @@ public:
             ((absPositionY >= smth->getAbsY() && absPositionY <= smth->getAbsY() + smth->getHeight()) ||
                 (absPositionY + height >= smth->getAbsY() && absPositionY + height <= smth->getAbsY() + smth->getHeight()))
             ) {
-           
+
             //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
 
 
@@ -341,10 +341,6 @@ public:
                 return 'e';
             }
 
-            return 0;
-
-
-           
 
         }
 
@@ -362,6 +358,30 @@ public:
 
     void setAir(int x) {
         air = x;
+    }
+
+    void setUpState(int x) {
+        upState = x;
+    }
+
+    void setLeftState(int x) {
+        leftState = x;
+    }
+
+    void setRightState(int x) {
+        rightState = x;
+    }
+
+    uint8_t getLeftState() {
+        return leftState;
+    }
+
+    uint8_t getUpState() {
+        return upState;
+    }
+
+    uint8_t getRightState() {
+        return rightState;
     }
 
     uint8_t getJump() {
@@ -438,7 +458,7 @@ void updateAbsCoords(Entity* sprite, backgroundImageHolder* bg) {
 }
 
 
-void panCameraLeft(Ball* sprite, backgroundImageHolder* bg, uint16_t offsetVal){
+void panCameraLeft(Ball* sprite, backgroundImageHolder* bg, uint16_t offsetVal) {
     bg->bg_x -= offsetVal;
     sprite->testMoveX(offsetVal);
 }
@@ -463,7 +483,7 @@ void panCameraBottom(Ball* sprite, backgroundImageHolder* bg, uint16_t offsetVal
 
 
 int getoffsetX(Ball* sprite, backgroundImageHolder* bg) {
-   
+
     return sprite->getX() - window_width / 2 - sprite->getWidth() / 2; //<0 if it's too far left, and >0 if it's too far right
 
 }
@@ -642,8 +662,6 @@ int main()
     if (!window)
         return 0;
 
-
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Variable Declarations~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     uint8_t paused = 0, gameOver = 0;
     uint8_t score = 0;
@@ -708,11 +726,6 @@ int main()
     staticObjectList[1].setAbsY(50);
     convertAbstoRelCoords(&staticObjectList[1], bg_img);
 
-    staticObjectList[2] = staticObject(125, 250, fi_enemy);
-    staticObjectList[2].isEnemy(1);
-    staticObjectList[2].setAbsX(250);
-    staticObjectList[2].setAbsY(500);
-    convertAbstoRelCoords(&staticObjectList[2], bg_img);
 
     //BALL GRAVITY
     int gravity = 2;
@@ -748,54 +761,86 @@ int main()
 
     do {
 
+        //* TODO : UNCOMMENT THIS TO ENABLE GRAVITY
+        ball_sprite.setY(ball_sprite.getY() + gravity);
+        //if there is collision reverse this move
+        if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(&maskObject, bg_img)) {
+            ball_sprite.setAir(1);
+            //ball_sprite.setJump(1);
+            if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
+                bg_img.bg_y += gravity;
+            }
+        }
+        else {
+            //printf("Ball landed");
+            ball_sprite.setJump(0);
+            ball_sprite.setAir(0);
+            ball_sprite.setJumpLimit(0);
 
-        ////* TODO : UNCOMMENT THIS TO ENABLE GRAVITY
-        //ball_sprite.setY(ball_sprite.getY() + gravity);
-        ////if there is collision reverse this move
-        //if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(&maskObject, bg_img)) {
-        //    ball_sprite.setAir(1);
-        //    //ball_sprite.setJump(1);
-        //    if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
-        //        bg_img.bg_y += gravity;
-        //    }
-        //}
-        //else {
-        //    //printf("Ball landed");
-        //    ball_sprite.setJump(0);
-        //    ball_sprite.setAir(0);
-        //    ball_sprite.setJumpLimit(0);
-        //    
-        //    ball_sprite.setY(ball_sprite.getY() - gravity);
+            ball_sprite.setY(ball_sprite.getY() - gravity);
 
-        //}
+        }
 
-        //if (ball_sprite.getJump()) {
-        //    if (!(ball_sprite.getJumpLimit() >= 10)) {
-        //        ball_sprite.setJumpLimit(ball_sprite.getJumpLimit() + 1);
-        //    }
-        //    
-        //    //ball_sprite.setJumpLimit(1);
+        if (ball_sprite.getJump()) {
+            if (!(ball_sprite.getJumpLimit() >= 10)) {
+                ball_sprite.setJumpLimit(ball_sprite.getJumpLimit() + 1);
+            }
 
-        //    if (bg_img.bg_y - 20 >= 0 && bg_img.bg_y <= bg_img.height - window_height && !(ball_sprite.getJumpLimit() >= 10)) {
-        //        bg_img.bg_y -= 20;
-        //        if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-        //            bg_img.bg_y += 20;
-        //        }
-        //    }
-        //    else if (ball_sprite.getY() - 20 >= 0 && !(ball_sprite.getJumpLimit() >= 10)) {
-        //        ball_sprite.testMoveY(-20);
-        //        if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-        //            ball_sprite.testMoveY(20);
-        //        }
-        //    }
-        //    //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
-        //    //if (ball_sprite.getJumpLimit() >= 100) {
-        //    //    ball_sprite.setJumpLimit(-100);
-        //    //}
-        //}
+            //ball_sprite.setJumpLimit(1);
 
-        
-        
+            if (bg_img.bg_y - 20 >= 0 && bg_img.bg_y <= bg_img.height - window_height && !(ball_sprite.getJumpLimit() >= 10)) {
+                bg_img.bg_y -= 20;
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    bg_img.bg_y += 20;
+                }
+            }
+            else if (ball_sprite.getY() - 20 >= 0 && !(ball_sprite.getJumpLimit() >= 10)) {
+                ball_sprite.testMoveY(-20);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveY(20);
+                }
+            }
+
+            if (ball_sprite.getLeftState()) {
+                if (bg_img.bg_x - 10 >= 0 && bg_img.bg_x <= bg_img.width - window_width) {
+                    bg_img.bg_x -= 10;
+
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        bg_img.bg_x += 10;
+                    }
+
+                }
+                else if (ball_sprite.getX() - 10 >= 0) {
+                    ball_sprite.testMoveX(-10);
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        ball_sprite.testMoveX(10);
+                    }
+
+                }
+            }
+
+            if (ball_sprite.getRightState()) {
+                if (bg_img.bg_x + 10 <= bg_img.width - window_width && bg_img.bg_x + window_width <= bg_img.width) {
+                    bg_img.bg_x += 10;
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        bg_img.bg_x -= 10;
+                    }
+                }
+                else if (ball_sprite.getX() + 10 <= window_width - ball_sprite.getWidth()) {
+                    ball_sprite.testMoveX(10);
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        ball_sprite.testMoveX(-10);
+                    }
+                }
+            }
+            //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
+            //if (ball_sprite.getJumpLimit() >= 100) {
+            //    ball_sprite.setJumpLimit(-100);
+            //}
+        }
+
+
+
         for (int i = 0; i < staticObjectsCount; i++) {
             //draw other entities first
             if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
@@ -804,16 +849,58 @@ int main()
 
         }
 
+        updateAbsCoords(&ball_sprite, &bg_img);
+
+        if (ball_sprite.getLeftState()) {
+            if (bg_img.bg_x - 10 >= 0 && bg_img.bg_x <= bg_img.width - window_width) {
+                bg_img.bg_x -= 10;
+
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    bg_img.bg_x += 10;
+                }
+
+            }
+            else if (ball_sprite.getX() - 10 >= 0) {
+                ball_sprite.testMoveX(-10);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(10);
+                }
+
+            }
+        }
+
+        if (ball_sprite.getRightState()) {
+            if (bg_img.bg_x + 10 <= bg_img.width - window_width && bg_img.bg_x + window_width <= bg_img.width) {
+                bg_img.bg_x += 10;
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    bg_img.bg_x -= 10;
+                }
+            }
+            else if (ball_sprite.getX() + 10 <= window_width - ball_sprite.getWidth()) {
+                ball_sprite.testMoveX(10);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(-10);
+                }
+            }
+        }
+        //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
+        //if (ball_sprite.getJumpLimit() >= 100) {
+        //    ball_sprite.setJumpLimit(-100);
+        //}
+
+
+        for (int i = 0; i < staticObjectsCount; i++) {
+            //draw other entities first
+            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
+                drawEntityFromAbsPos(buffer, &staticObjectList[i], bg_img, &maskObject);
+            }
+
+        }
 
         updateAbsCoords(&ball_sprite, &bg_img);
 
-
         //draw ball last
         drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
-
-
-
-
 
         //TODO: Reenable this to print stuff
         //printf("score: %d\n", score);
@@ -829,10 +916,8 @@ int main()
             }
 
         }
-        
+
         staticObjectInteraction(&callbackData);
-
-
 
         bg_img.bg_x_old = bg_img.bg_x;
         bg_img.bg_y_old = bg_img.bg_y;
@@ -844,8 +929,6 @@ int main()
             break;
         }
     } while (mfb_wait_sync(window));
-
-
 
     //TODO: Free every pointer here
     return 0;
@@ -866,80 +949,55 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
     uint8_t* score = callbackData->score;
 
+
     int offsetX = getoffsetX(ball_sprite, bg);
     int offsetY = getoffsetY(ball_sprite, bg);
 
 
     printf("offx: %d, offy: %d\n", offsetX, offsetY);
 
+
     if (isPressed) {
         //TODO: add conditions to detect collsions and prevent ball from going beyond the window borders
-
         if (key == KB_KEY_LEFT) {
-            //1. condition for only shifting the ball left
-            //2. condition for only shifting the camera left
-            //3. condition for shifting both the ball and camera
-            //4. condition for only shifting the ball and not the camera
 
-            //ball_sprite.setPosition(window_width / 2 - ball_sprite.getWidth() / 2, window_height / 2 - ball_sprite.getHeight() / 2);
-
-            
-            //TODO: Add condition to check if the posX, posY is not in the middle of the framebuffer
-
+            ball_sprite->setLeftState(1);
+            ball_sprite->setRightState(0);
             if (bg->bg_x - 10 >= 0 && bg->bg_x <= bg->width - window_width) {
                 bg->bg_x -= 10;
-
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_x += 10;
                 }
-
             }
             else if (ball_sprite->getX() - 10 >= 0) {
 
-                //if (offsetX < 0) {
-                //    panCameraLeft(ball_sprite, bg, -1 * offsetX);
-
-                //}
-                //else {
-                    ball_sprite->testMoveX(-10);
-                    if (ball_sprite->detectCollision(maskObject, *bg)) {
-                        ball_sprite->testMoveX(10);
-                    }
-                //}
-
+                ball_sprite->testMoveX(-10);
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
+                    ball_sprite->testMoveX(10);
+                }
             }
-            
-
         } //endif left
-        else if (key == KB_KEY_RIGHT) {
-            //TODO: Add condition to check if the posX, posY is not in the middle of the framebuffer
-
+        if (key == KB_KEY_RIGHT) {
+            ball_sprite->setRightState(1);
+            ball_sprite->setLeftState(0);
             if (bg->bg_x + 10 <= bg->width - window_width && bg->bg_x + window_width <= bg->width) {
                 bg->bg_x += 10;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_x -= 10;
                 }
-            }else if (ball_sprite->getX() + 10 <= window_width - ball_sprite->getWidth()) {
-                
 
-                //if (offsetX > 0) {
-                //    panCameraRight(ball_sprite, bg, offsetX);
-
-                //}
-                //else {
-                    ball_sprite->testMoveX(10);
-                    if (ball_sprite->detectCollision(maskObject, *bg)) {
-                        ball_sprite->testMoveX(-10);
-                    }
-                //}
-                                  
-                
             }
-
-
+            else if (ball_sprite->getX() + 10 <= window_width - ball_sprite->getWidth()) {
+                ball_sprite->testMoveX(10);
+                if (ball_sprite->detectCollision(maskObject, *bg)) {
+                    ball_sprite->testMoveX(-10);
+                }
+            }
         } //endif right
-        else if (key == KB_KEY_UP) {
+        if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
             ball_sprite->setJump(1);
+            ball_sprite->setUpState(1);
+
             if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 20;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
@@ -952,15 +1010,14 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                     ball_sprite->testMoveY(20);
                 }
             }
-
         } //endif up
-        else if (key == KB_KEY_DOWN) {
-
-            if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
+        if (key == KB_KEY_DOWN) {
+            ball_sprite->setLeftState(0);
+            ball_sprite->setRightState(0);
+            /*if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
                 bg->bg_y += 10;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_y -= 10;
-
                 }
             }
             else if (ball_sprite->getY() + 10 <= window_height - ball_sprite->getHeight()) {
@@ -968,18 +1025,36 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveY(-10);
                 }
+            }*/
+        } //endif down
+
+        //TODO: for every item in object list that is in the framebuffer, check if collision
+        for (int i = 0; i < staticObjectsCount; i++) {
+            //draw other entities first
+            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
+                char col = ball_sprite->detectCollision(&staticObjectList[i], *bg);
+
+                if (col == 'c') {
+                    //if coin collision
+                    unDrawSpriteToBackground(buffer, &staticObjectList[i], *bg, maskObject);
+                    deleteStaticObject(i, staticObjectList);
+
+                    //TODO: Increment Score
+                    *score = *score + 1;
+                }
+                else if (col == 'e') {
+                    //TODO: implement a die function, where the ball goes to the last save location
+                    uint8_t lifeCount = ball_sprite->getLives() - 1;
+                    ball_sprite->setLives(lifeCount - 1);
+                    ball_sprite->setX(0);
+                    ball_sprite->setY(0);
+
+
+                }
             }
 
-
-
-
-        } //endif down
-            
-
+        }
 
         staticObjectInteraction(callbackData);
-
-        
-
     }
 }
