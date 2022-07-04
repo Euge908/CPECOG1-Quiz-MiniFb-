@@ -33,7 +33,7 @@ typedef struct {
 class Entity {
 protected:
     //positionX and positionY are relative coordinates to the framebuffer
-    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY, jump, jumpLimit, air;
+    int positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY, jump, jumpLimit, air, leftState, upState, rightState;
     uint8_t* image_data;
 public:
     Entity() {
@@ -49,11 +49,14 @@ public:
         jump = 0;
         jumpLimit = 0;
         air = 0;
+        leftState = 0;
+        upState = 0;
+        rightState = 0;
 
 
     }
     void printAttributes() {
-        printf("positionX: %d, positionY: %d, width: %d, height: %d, stride: %d, positionYOld: %d, positionXOld: %d, absPositionX: %d, absPositionY: %d\n\n", positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY);
+        //printf("positionX: %d, positionY: %d, width: %d, height: %d, stride: %d, positionYOld: %d, positionXOld: %d, absPositionX: %d, absPositionY: %d\n\n", positionX, positionY, width, height, stride, positionYOld, positionXOld, absPositionX, absPositionY);
     }
 
 
@@ -273,17 +276,19 @@ public:
 
     char detectCollision(staticObject* smth, backgroundImageHolder bg) {
 
+        //TODO: Fix bug here about relative position
+        // 
+        // 
         //[hit from left side of smth OR hit from right side of smth] AND [hit from top of smth OR hit from bottomof smth]
         if (
-            ((positionX >= smth->getX() && positionX <= smth->getX() + smth->getWidth()) ||
-                (positionX + width > smth->getX() && positionX + width < smth->getX() + smth->getWidth()))
+            ((absPositionX >= smth->getAbsX() && absPositionX <= smth->getAbsX() + smth->getWidth()) ||
+                (absPositionX + width >= smth->getAbsX() && absPositionX + width <= smth->getAbsX() + smth->getWidth()))
             &&
-            ((positionY >= smth->getY() && positionY <= smth->getY() + smth->getHeight()) ||
-                (positionY + height >= smth->getY() && positionY + height <= smth->getY() + smth->getHeight()))
+            ((absPositionY >= smth->getAbsY() && absPositionY <= smth->getAbsY() + smth->getHeight()) ||
+                (absPositionY + height >= smth->getAbsY() && absPositionY + height <= smth->getAbsY() + smth->getHeight()))
             ) {
-           
-            //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
 
+            //TODO: this code assumes that the hitbox is a literal box (not a circle) for the ball
 
 
             if (smth->isCoin()) {
@@ -342,7 +347,7 @@ public:
             return 0;
 
 
-           
+
 
         }
 
@@ -360,6 +365,30 @@ public:
 
     void setAir(int x) {
         air = x;
+    }
+
+    void setUpState(int x) {
+        upState = x;
+    }
+
+    void setLeftState(int x) {
+        leftState = x;
+    }
+
+    void setRightState(int x) {
+        rightState = x;
+    }
+
+    uint8_t getLeftState() {
+        return leftState;
+    }
+
+    uint8_t getUpState() {
+        return upState;
+    }
+
+    uint8_t getRightState() {
+        return rightState;
     }
 
     uint8_t getJump() {
@@ -589,13 +618,20 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
 
 }
 
+void updateAbsCoords(Entity* sprite, backgroundImageHolder* bg) {
+    //NOTE: Absolute Position is not relative to framebuffer. This function will draw the sprite based from it's absolute position. Specifically, this will transform the absolution position into the framebuffer relative coordinates.
+
+    //convert abs pos to rel pos 
+    sprite->setAbsX(sprite->getX() + bg->bg_x);
+    sprite->setAbsY(sprite->getY() + bg->bg_y);
+
+}
+
 int main()
 {
     struct mfb_window* window = mfb_open_ex("my display", window_width, window_height, WF_RESIZABLE);
     if (!window)
         return 0;
-
-
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Variable Declarations~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     uint8_t paused = 0, gameOver = 0;
@@ -696,8 +732,6 @@ int main()
 
 
     do {
-
-
         //* TODO : UNCOMMENT THIS TO ENABLE GRAVITY
         ball_sprite.setY(ball_sprite.getY() + gravity);
         //if there is collision reverse this move
@@ -737,6 +771,39 @@ int main()
                     ball_sprite.testMoveY(20);
                 }
             }
+
+            if (ball_sprite.getLeftState()) {
+                if (bg_img.bg_x - 10 >= 0 && bg_img.bg_x <= bg_img.width - window_width) {
+                    bg_img.bg_x -= 10;
+
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        bg_img.bg_x += 10;
+                    }
+
+                }
+                else if (ball_sprite.getX() - 10 >= 0) {
+                    ball_sprite.testMoveX(-10);
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        ball_sprite.testMoveX(10);
+                    }
+
+                }
+            }
+
+            if (ball_sprite.getRightState()) {
+                if (bg_img.bg_x + 10 <= bg_img.width - window_width && bg_img.bg_x + window_width <= bg_img.width) {
+                    bg_img.bg_x += 10;
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        bg_img.bg_x -= 10;
+                    }
+                }
+                else if (ball_sprite.getX() + 10 <= window_width - ball_sprite.getWidth()) {
+                    ball_sprite.testMoveX(10);
+                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                        ball_sprite.testMoveX(-10);
+                    }
+                }
+            }
             //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
             //if (ball_sprite.getJumpLimit() >= 100) {
             //    ball_sprite.setJumpLimit(-100);
@@ -753,12 +820,10 @@ int main()
 
         }
 
+        updateAbsCoords(&ball_sprite, &bg_img);
+
         //draw ball last
         drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
-
-
-
-
 
         //TODO: Reenable this to print stuff
         //printf("score: %d\n", score);
@@ -777,8 +842,6 @@ int main()
         
         staticObjectInteraction(&callbackData);
 
-
-
         bg_img.bg_x_old = bg_img.bg_x;
         bg_img.bg_y_old = bg_img.bg_y;
 
@@ -789,8 +852,6 @@ int main()
             break;
         }
     } while (mfb_wait_sync(window));
-
-
 
     //TODO: Free every pointer here
     return 0;
@@ -813,28 +874,25 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
     if (isPressed) {
         //TODO: add conditions to detect collsions and prevent ball from going beyond the window borders
-
         if (key == KB_KEY_LEFT) {
-
+            ball_sprite->setLeftState(1);
+            ball_sprite->setRightState(0);
             if (bg->bg_x - 10 >= 0 && bg->bg_x <= bg->width - window_width) {
                 bg->bg_x -= 10;
-
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_x += 10;
                 }
-
             }
             else if (ball_sprite->getX() - 10 >= 0) {
                 ball_sprite->testMoveX(-10);
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveX(10);
                 }
-
             }
-
         } //endif left
-        else if (key == KB_KEY_RIGHT) {
-
+        if (key == KB_KEY_RIGHT) {
+            ball_sprite->setRightState(1);
+            ball_sprite->setLeftState(0);
             if (bg->bg_x + 10 <= bg->width - window_width && bg->bg_x + window_width <= bg->width) {
                 bg->bg_x += 10;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
@@ -847,11 +905,10 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                     ball_sprite->testMoveX(-10);
                 }
             }
-
-
         } //endif right
-        else if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
+        if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
             ball_sprite->setJump(1);
+            ball_sprite->setUpState(1);
             if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 20;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
@@ -864,15 +921,14 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                     ball_sprite->testMoveY(20);
                 }
             }
-
         } //endif up
-        else if (key == KB_KEY_DOWN) {
-
-            if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
+        if (key == KB_KEY_DOWN) {
+            ball_sprite->setLeftState(0);
+            ball_sprite->setRightState(0);
+            /*if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
                 bg->bg_y += 10;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     bg->bg_y -= 10;
-
                 }
             }
             else if (ball_sprite->getY() + 10 <= window_height - ball_sprite->getHeight()) {
@@ -880,15 +936,9 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveY(-10);
                 }
-            }
-
-
-
-
+            }*/
         } //endif down
             
-
-
         //TODO: for every item in object list that is in the framebuffer, check if collision
         for (int i = 0; i < staticObjectsCount; i++) {
             //draw other entities first
@@ -917,8 +967,5 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
         }
 
         staticObjectInteraction(callbackData);
-
-        
-
     }
 }
