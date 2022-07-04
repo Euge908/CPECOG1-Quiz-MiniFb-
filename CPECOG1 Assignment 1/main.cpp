@@ -643,12 +643,11 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
             }
             else if (col == 'e') {
                 //TODO: implement a die function, where the ball goes to the last save location
-                uint8_t lifeCount = ball_sprite->getLives() - 1;
-                ball_sprite->setLives(lifeCount - 1);
+
                 ball_sprite->setX(0);
                 ball_sprite->setY(0);
-
-
+                uint8_t lifeCount = ball_sprite->getLives() - 1;
+                ball_sprite->setLives(lifeCount);
             }
         }
 
@@ -657,16 +656,178 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
 
 }
 
+
 //convertAbstoRelCoords(Entity* sprite, backgroundImageHolder bg)
 void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObject* scoreList, backgroundImageHolder bg, staticObject* mask, uint8_t score, uint8_t life)
 {
+    FIBITMAP* fi_num0 = FreeImage_Load(FIF_PNG, "assets/num0.png");
+    FIBITMAP* fi_num1 = FreeImage_Load(FIF_PNG, "assets/num1.png");
+    FIBITMAP* fi_num2 = FreeImage_Load(FIF_PNG, "assets/num2.png");
+    FIBITMAP* fi_num3 = FreeImage_Load(FIF_PNG, "assets/num3.png");
+    FIBITMAP* fi_num4 = FreeImage_Load(FIF_PNG, "assets/num4.png");
+    FIBITMAP* fi_num5 = FreeImage_Load(FIF_PNG, "assets/num5.png");
+    FIBITMAP* fi_num6 = FreeImage_Load(FIF_PNG, "assets/num6.png");
+    FIBITMAP* fi_num7 = FreeImage_Load(FIF_PNG, "assets/num7.png");
+    FIBITMAP* fi_num8 = FreeImage_Load(FIF_PNG, "assets/num8.png");
+    FIBITMAP* fi_num9 = FreeImage_Load(FIF_PNG, "assets/num9.png");
+    
+
+
     //score is only two digits
     //life is only two digits
     //TODO: Make condition so that it doesn't overflow
+    score %= 100;
+    life %= 100;
 
+
+    uint8_t scoreOnes = score % 10;
+    
+    
+    
+    uint8_t scoreTens = (uint8_t) score / 10;
+
+    uint8_t lifeOnes = life % 10;
+    uint8_t lifeTens = life / 10;
+
+    switch (lifeOnes) {
+    case 0:
+        lifeList[2].setImageData(fi_num0);
+        break;
+    case 1:
+        lifeList[2].setImageData(fi_num1);
+        break;
+    case 2:
+        lifeList[2].setImageData(fi_num2);
+        break;
+    case 3:
+        lifeList[2].setImageData(fi_num3);
+        break;
+    case 4:
+        lifeList[2].setImageData(fi_num4);
+        break;
+    case 5:
+        lifeList[2].setImageData(fi_num5);
+        break;
+    case 6:
+        lifeList[2].setImageData(fi_num6);
+        break;
+    case 7:
+        lifeList[2].setImageData(fi_num7);
+        break;
+    case 8:
+        lifeList[2].setImageData(fi_num8);
+        break;
+    case 9:
+        lifeList[2].setImageData(fi_num9);
+        break;
+
+    }
+
+    switch (lifeTens) {
+    case 0:
+        lifeList[1].setImageData(fi_num0);
+        break;
+    case 1:
+        lifeList[1].setImageData(fi_num1);
+        break;
+    case 2:
+        lifeList[1].setImageData(fi_num2);
+        break;
+    case 3:
+        lifeList[1].setImageData(fi_num3);
+        break;
+    case 4:
+        lifeList[1].setImageData(fi_num4);
+        break;
+    case 5:
+        lifeList[1].setImageData(fi_num5);
+        break;
+    case 6:
+        lifeList[1].setImageData(fi_num6);
+        break;
+    case 7:
+        lifeList[1].setImageData(fi_num7);
+        break;
+    case 8:
+        lifeList[1].setImageData(fi_num8);
+        break;
+    case 9:
+        lifeList[1].setImageData(fi_num9);
+        break;
+
+    }
+
+    switch (scoreOnes) {
+        case 0:
+            scoreList[2].setImageData(fi_num0);
+            break;
+        case 1:
+            scoreList[2].setImageData(fi_num1);
+            break;
+        case 2:
+            scoreList[2].setImageData(fi_num2);
+            break;
+        case 3:
+            scoreList[2].setImageData(fi_num3);
+            break;
+        case 4:
+            scoreList[2].setImageData(fi_num4);
+            break;
+        case 5:
+            scoreList[2].setImageData(fi_num5);
+            break;
+        case 6:
+            scoreList[2].setImageData(fi_num6);
+            break;
+        case 7:
+            scoreList[2].setImageData(fi_num7);
+            break;
+        case 8:
+            scoreList[2].setImageData(fi_num8);
+            break;
+        case 9:
+            scoreList[2].setImageData(fi_num9);
+            break;
+
+    }
+
+    switch (scoreTens) {
+        case 0:
+            scoreList[1].setImageData(fi_num0);
+            break;
+        case 1:
+            scoreList[1].setImageData(fi_num1);
+            break;
+        case 2:
+            scoreList[1].setImageData(fi_num2);
+            break;
+        case 3:
+            scoreList[1].setImageData(fi_num3);
+            break;
+        case 4:
+            scoreList[1].setImageData(fi_num4);
+            break;
+        case 5:
+            scoreList[1].setImageData(fi_num5);
+            break;
+        case 6:
+            scoreList[1].setImageData(fi_num6);
+            break;
+        case 7:
+            scoreList[1].setImageData(fi_num7);
+            break;
+        case 8:
+            scoreList[1].setImageData(fi_num8);
+            break;
+        case 9:
+            scoreList[1].setImageData(fi_num9);
+            break;
+
+    }
 
     //TODO: Add conditions to change value of stuff here
     for (int j = 0; j < 3; j++) {
+
         drawEntity(buffer, &lifeList[j], bg, mask);
     }
 
@@ -684,7 +845,7 @@ int main()
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Variable Declarations~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     uint8_t paused = 0, gameOver = 0;
-    uint8_t score = 0, life = 0;
+    uint8_t score = 0;
 
     //TODO: replace this with enemy object list instead and add staticObjectList
     //Entity* entityList = (Entity*)malloc(20 * sizeof(Entity)); //20 items by default 
@@ -703,9 +864,9 @@ int main()
     uint8_t* bg = FreeImage_GetBits(fi_bg);
 
     //BALL CLASS AND SPRITE
-    FIBITMAP* fi_ball = FreeImage_Load(FIF_PNG, "assets/sprite.png");
+    FIBITMAP* fi_ball = FreeImage_Load(FIF_PNG, "assets/pepe_ball.png");
     Ball ball_sprite = Ball(sprite_width, sprite_height, fi_ball);
-    ball_sprite.setPosition(window_width / 2 - ball_sprite.getWidth() / 2, window_height / 2 - ball_sprite.getHeight() / 2);
+    ball_sprite.setPosition(window_width / 2 - ball_sprite.getWidth() / 2, window_height / 2 - ball_sprite.getHeight() / 2 - 100);
 
     ball_sprite.setYOld(ball_sprite.getY());
     ball_sprite.setXOld(ball_sprite.getX());
@@ -716,14 +877,14 @@ int main()
     backgroundImageHolder bg_img;
     bg_img.bg_x = 0;
     bg_img.bg_x_old = 0;
-    bg_img.bg_y = 0;
+    bg_img.bg_y = 500;
     bg_img.bg_y_old = 0;
     bg_img.img_data = bg;
     bg_img.width = wall_bg_width;
     bg_img.height = wall_bg_height;
 
     //MASK OBJECT AND SPRITE
-    FIBITMAP* fi_mask = FreeImage_Load(FIF_PNG, "assets/testMask.png");
+    FIBITMAP* fi_mask = FreeImage_Load(FIF_PNG, "assets/firstFloor.png");
     staticObject maskObject = staticObject(2704, 1628, fi_mask);
     maskObject.isUnpassable(1);
 
@@ -751,7 +912,7 @@ int main()
 
 
     //BALL GRAVITY
-    int gravity = 2;
+    int gravity = 1;
 
     // Copies the full background to the framebuffer
     for (int i = 0; i < bg_img.width * bg_img.height * 3; i += 3) {
@@ -783,13 +944,13 @@ int main()
     staticObject* lifeList = new staticObject[3];
 
     //score text
-    FIBITMAP* fi_score_text = FreeImage_Load(FIF_PNG, "assets/bigScore.png");
+    FIBITMAP* fi_score_text = FreeImage_Load(FIF_PNG, "assets/ScoreFinal.png");
     FIBITMAP* fi_zero = FreeImage_Load(FIF_PNG, "assets/num0.png");
 
-    scoreList[0] = staticObject(250, 50, fi_score_text);
-    scoreList[0].setX(899);
+    scoreList[0] = staticObject(50, 50, fi_score_text);
+    scoreList[0].setX(1099);
     scoreList[0].setY(0);
-    scoreList[0].setXOld(899);
+    scoreList[0].setXOld(1099);
     scoreList[0].setYOld(0);
 
 
@@ -979,9 +1140,8 @@ int main()
         }
 
 
-
-
-        displayStaticScoreLife(buffer, lifeList, scoreList, bg_img, &maskObject, score, life);
+        printf("Life: %d\n", ball_sprite.getLives());
+        displayStaticScoreLife(buffer, lifeList, scoreList, bg_img, &maskObject, score, ball_sprite.getLives());
 
 
 
@@ -1113,46 +1273,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
         if (key == KB_KEY_DOWN) {
             ball_sprite->setLeftState(0);
             ball_sprite->setRightState(0);
-            /*if (bg->bg_y + 10 <= bg->height - window_height && bg->bg_y + window_height <= bg->height) {
-                bg->bg_y += 10;
-                if (ball_sprite->detectCollision(maskObject, *bg)) {
-                    bg->bg_y -= 10;
-                }
-            }
-            else if (ball_sprite->getY() + 10 <= window_height - ball_sprite->getHeight()) {
-                ball_sprite->testMoveY(10);
-                if (ball_sprite->detectCollision(maskObject, *bg)) {
-                    ball_sprite->testMoveY(-10);
-                }
-            }*/
         } //endif down
-
-        //TODO: for every item in object list that is in the framebuffer, check if collision
-        for (int i = 0; i < staticObjectsCount; i++) {
-            //draw other entities first
-            if (staticObjectList[i].isCoin() || staticObjectList[i].isEnemy() || staticObjectList[i].isSaveGlass() || staticObjectList[i].isUnpassable()) {
-                char col = ball_sprite->detectCollision(&staticObjectList[i], *bg);
-
-                if (col == 'c') {
-                    //if coin collision
-                    unDrawSpriteToBackground(buffer, &staticObjectList[i], *bg, maskObject);
-                    deleteStaticObject(i, staticObjectList);
-
-                    //TODO: Increment Score
-                    *score = *score + 1;
-                }
-                else if (col == 'e') {
-                    //TODO: implement a die function, where the ball goes to the last save location
-                    uint8_t lifeCount = ball_sprite->getLives() - 1;
-                    ball_sprite->setLives(lifeCount - 1);
-                    ball_sprite->setX(0);
-                    ball_sprite->setY(0);
-
-
-                }
-            }
-
-        }
 
         staticObjectInteraction(callbackData);
     }
