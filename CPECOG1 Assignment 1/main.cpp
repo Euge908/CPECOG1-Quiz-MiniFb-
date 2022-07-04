@@ -658,8 +658,13 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
 }
 
 //convertAbstoRelCoords(Entity* sprite, backgroundImageHolder bg)
-void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObject* scoreList, backgroundImageHolder bg, staticObject* mask, int score, int life)
+void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObject* scoreList, backgroundImageHolder bg, staticObject* mask, uint8_t score, uint8_t life)
 {
+    //score is only two digits
+    //life is only two digits
+    //TODO: Make condition so that it doesn't overflow
+
+
     //TODO: Add conditions to change value of stuff here
     for (int j = 0; j < 3; j++) {
         drawEntity(buffer, &lifeList[j], bg, mask);
