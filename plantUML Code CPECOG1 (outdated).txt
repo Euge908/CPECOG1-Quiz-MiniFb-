@@ -1,0 +1,124 @@
+@startuml
+
+title Relationships - Class Diagram
+
+
+class Main{
+  
+}
+
+class Entity{
+  -Int positionX, positionY
+  -Int width
+  -Int height
+  
+  -Uint8_t* image_data
+  +Void setImageData(Uint8_t* img_data)
+  +Uint8_t* getImageData()
+  +Void setWidthHeight(int w, int h)
+  +Int updatePosition(int x, int y)
+}
+
+
+/'state variables are for animations'/
+class Ball {
+  -Int powerUpState
+  -Int lives  
+  -Int direction
+  -Boolean dead
+  -Boolean moving
+  -Int state
+  -Int movementSpeed
+  
+  +Void move()
+  +Boolean detectCollision()
+  +Boolean hitEnemy
+  +Boolean isJumping();
+  +Boolean isDead();
+  +Boolean isMoving();
+  
+  +Void updateSize()
+  +Void captureFlag()
+  +Void dieByFalling()
+  +Void dieByObstacle ()
+  +Boolean isBig()
+  +Void setPowerUp()
+  
+  
+}
+
+/'state variables are for animations'/
+class EnemyObstacle{
+  -Int walkingSpeed
+  -Int walkingDistance
+  -Int movementSpeed
+  -Int direction
+  -Int state
+  
+  +Void move()
+  +Boolean detectCollision()
+   
+  
+  
+  +void pace()
+
+}
+
+
+
+
+class StaticObject{
+
+  -Uint8_t* image_data
+  +Void setImageData(Uint8_t* img_data)
+  +Uint8_t* getImageData()
+
+  -Boolean Coin
+  -Boolean SaveGlass
+  -Boolean unpassable
+  
+  
+  +Boolean isSaveGlass()
+  +Boolean isSaveGlass(BooleanValue)
+
+  +Boolean isCoin()
+  +Boolean isCoin(Boolean val)
+
+  +Boolean isUnpassable()
+  +Boolean isUnpassable(Boolean val)
+
+  +Void setSavePoint(Int x, Int y ) 
+
+}
+
+Class backgroundDataHolder{
+-int bg_x
+-int bg_y
+-int bg_x_old
+-int bg_y_old
+-uint8_t* img_data
+
+}
+
+
+class KeyPressedCallback{
+
+}
+
+Main <|-- KeyPressedCallback
+Main --> KeyPressedCallback
+
+KeyPressedCallback --> Ball
+
+
+Entity <|-down- Ball: Inheritance
+Entity <|-down- EnemyObstacle: Inheritance
+Entity <|-down- StaticObject: Inheritance
+
+
+Main -- StaticObject
+Main -- Entity
+
+
+
+@enduml
