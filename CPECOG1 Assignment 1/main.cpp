@@ -428,9 +428,6 @@ typedef struct {
 } callbackDataHolder;
 
 
-
-
-
 void updateAbsCoords(Entity* sprite, backgroundImageHolder* bg) {
     //NOTE: Absolute Position is not relative to framebuffer. This function will draw the sprite based from it's absolute position. Specifically, this will transform the absolution position into the framebuffer relative coordinates.
 
@@ -711,7 +708,11 @@ int main()
     staticObjectList[1].setAbsY(50);
     convertAbstoRelCoords(&staticObjectList[1], bg_img);
 
-
+    staticObjectList[2] = staticObject(125, 250, fi_enemy);
+    staticObjectList[2].isEnemy(1);
+    staticObjectList[2].setAbsX(250);
+    staticObjectList[2].setAbsY(500);
+    convertAbstoRelCoords(&staticObjectList[2], bg_img);
 
     //BALL GRAVITY
     int gravity = 2;
@@ -937,7 +938,7 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
 
         } //endif right
-        else if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
+        else if (key == KB_KEY_UP) {
             ball_sprite->setJump(1);
             if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
                 bg->bg_y -= 20;
