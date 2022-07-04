@@ -19,13 +19,17 @@ See https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md for edit
 * Ball Jump is not yet Implemented (Currently ball is in 'creative/ god mode')
 
 ## Urgent Tasks:
-* Fix coin positioning
-* Implement enemies in game (cannot be done without fixing coin positioning first)
-* Implement jump method for ball
+~~* Fix coin positioning~~
+* Implement enemies in game ~~(cannot be done without fixing coin positioning first)~~
+* ~~Implement jump method for ball~~
 * Fix camera panning
 
 ## Issues Addressed:
-* Collision and gravity now works
+* ~~Collision and~~ gravity now works
 * User control of ball
 * Terrain mask works 
 * UML Diagram works-ish (is now a bit outdated)
+* Coin Positioning now works, but further testing is needed to check if there are bugs
+
+## New Issues:
+* Collision error code prints out perfectly, but it doesn't return properly in the callback function
