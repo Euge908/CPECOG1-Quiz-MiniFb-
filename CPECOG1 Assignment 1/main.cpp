@@ -496,6 +496,7 @@ int getoffsetY(Ball* sprite, backgroundImageHolder* bg) {
 }
 
 
+//mask is needed pala to daw the walls. I almost forgot
 void drawEntity(uint32_t* buffer, Entity* sprite, backgroundImageHolder bg, staticObject* mask) {
 
     //redraw background at old position of sprite
@@ -656,6 +657,20 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
 
 }
 
+//convertAbstoRelCoords(Entity* sprite, backgroundImageHolder bg)
+void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObject* scoreList, backgroundImageHolder bg, staticObject* mask, int score, int life)
+{
+    //TODO: Add conditions to change value of stuff here
+    for (int j = 0; j < 3; j++) {
+        drawEntity(buffer, &lifeList[j], bg, mask);
+    }
+
+    for (int i = 0; i < 3; i++) {
+        drawEntity(buffer, &scoreList[i], bg, mask);
+    }
+}
+
+
 int main()
 {
     struct mfb_window* window = mfb_open_ex("my display", window_width, window_height, WF_RESIZABLE);
@@ -664,13 +679,16 @@ int main()
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Variable Declarations~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     uint8_t paused = 0, gameOver = 0;
-    uint8_t score = 0;
+    uint8_t score = 0, life = 0;
 
     //TODO: replace this with enemy object list instead and add staticObjectList
     //Entity* entityList = (Entity*)malloc(20 * sizeof(Entity)); //20 items by default 
     // 
     // 
     staticObject* staticObjectList = new staticObject[staticObjectsCount]; //20 items by default
+    
+    
+    
 
 
     //create an oversized framebuffer
@@ -753,6 +771,62 @@ int main()
     callbackData.buffer = buffer;
     callbackData.score = &score;
 
+
+
+    //Initialize score and life 
+    staticObject* scoreList= new staticObject[3]; 
+    staticObject* lifeList = new staticObject[3];
+
+    //score text
+    FIBITMAP* fi_score_text = FreeImage_Load(FIF_PNG, "assets/bigScore.png");
+    FIBITMAP* fi_zero = FreeImage_Load(FIF_PNG, "assets/num0.png");
+
+    scoreList[0] = staticObject(250, 50, fi_score_text);
+    scoreList[0].setX(899);
+    scoreList[0].setY(0);
+    scoreList[0].setXOld(899);
+    scoreList[0].setYOld(0);
+
+
+    scoreList[1] = staticObject(50, 50, fi_zero);
+    scoreList[1].setX(1149);
+    scoreList[1].setY(0);
+    scoreList[1].setXOld(1149);
+    scoreList[1].setYOld(0);
+
+
+    scoreList[2] = staticObject(50, 50, fi_zero);
+    scoreList[2].setX(1199);
+    scoreList[2].setY(0);
+    scoreList[2].setXOld(1199);
+    scoreList[2].setYOld(0);
+
+
+
+    //life text
+
+    FIBITMAP* fi_life_text = FreeImage_Load(FIF_PNG, "assets/bigLife.png");
+    lifeList[0] = staticObject(189, 46, fi_life_text);
+    lifeList[0].setX(0);
+    lifeList[0].setY(0);
+    lifeList[0].setXOld(0);
+    lifeList[0].setYOld(0);
+
+
+    lifeList[1] = staticObject(50, 50, fi_zero);
+    lifeList[1].setX(189);
+    lifeList[1].setY(0);
+    lifeList[1].setXOld(189);
+    lifeList[1].setYOld(0);
+
+    lifeList[2] = staticObject(50, 50, fi_zero);
+    lifeList[2].setX(239);
+    lifeList[2].setY(0);
+    lifeList[2].setXOld(239);
+    lifeList[2].setYOld(0);
+
+
+
     //INITIALIZE KEYBOARD INTERRUPTS
     mfb_set_keyboard_callback(window, key_press);
     mfb_set_user_data(window, (void*)&callbackData);
@@ -776,6 +850,8 @@ int main()
             ball_sprite.setJump(0);
             ball_sprite.setAir(0);
             ball_sprite.setJumpLimit(0);
+            ball_sprite.setRightState(0);
+            ball_sprite.setLeftState(0);
 
             ball_sprite.setY(ball_sprite.getY() - gravity);
 
@@ -897,7 +973,25 @@ int main()
 
         }
 
+
+
+
+        displayStaticScoreLife(buffer, lifeList, scoreList, bg_img, &maskObject, score, life);
+
+
+
+
+
+
+
+
         updateAbsCoords(&ball_sprite, &bg_img);
+
+
+
+
+
+
 
         //draw ball last
         drawEntity(buffer, &ball_sprite, bg_img, &maskObject);
