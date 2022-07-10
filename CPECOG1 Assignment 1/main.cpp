@@ -50,6 +50,8 @@ public:
         positionXOld = 0;
         absPositionX = 0;
         absPositionY = 0;
+
+
         jump = 0;
         jumpLimit = 0;
         air = 0;
@@ -463,16 +465,6 @@ void updateAbsCoords(Entity* sprite, backgroundImageHolder* bg) {
 
 
 
-void panCameraBottom(Ball* sprite, backgroundImageHolder* bg, uint16_t offsetVal) {
-    bg->bg_y += offsetVal;
-    sprite->testMoveY(-1 * offsetVal);
-}
-
-void panCameraTop(Ball* sprite, backgroundImageHolder* bg, uint16_t offsetVal) {
-    bg->bg_y -= offsetVal;
-    sprite->testMoveY(offsetVal);
-}
-
 
 
 int getoffsetX(Ball* sprite, backgroundImageHolder* bg) {
@@ -639,8 +631,11 @@ void staticObjectInteraction(callbackDataHolder* callbackData) {
 
                 //ball_sprite->setPosition(window_width / 2 - ball_sprite->getWidth() / 2, window_height / 2 - ball_sprite->getHeight() / 2 - 100);
                 printf("Character died once");
+                ball_sprite->setX(window_width / 2 - ball_sprite->getWidth() / 2);
+                ball_sprite->setY(window_height / 2 - ball_sprite->getHeight() / 2 - 100);
 
-                uint8_t lifeCount = ball_sprite->getLives() - 1;
+
+                int lifeCount = ball_sprite->getLives() - 1;
                 if (lifeCount >= 0) {
                     ball_sprite->setLives(lifeCount);
                 }
@@ -666,7 +661,7 @@ void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObje
     FIBITMAP* fi_num7 = FreeImage_Load(FIF_PNG, "assets/num7.png");
     FIBITMAP* fi_num8 = FreeImage_Load(FIF_PNG, "assets/num8.png");
     FIBITMAP* fi_num9 = FreeImage_Load(FIF_PNG, "assets/num9.png");
-    
+
 
 
     //score is only two digits
@@ -677,10 +672,10 @@ void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObje
 
 
     uint8_t scoreOnes = score % 10;
-    
-    
-    
-    uint8_t scoreTens = (uint8_t) score / 10;
+
+
+
+    uint8_t scoreTens = (uint8_t)score / 10;
 
     uint8_t lifeOnes = life % 10;
     uint8_t lifeTens = life / 10;
@@ -754,70 +749,70 @@ void displayStaticScoreLife(uint32_t* buffer, staticObject* lifeList, staticObje
     }
 
     switch (scoreOnes) {
-        case 0:
-            scoreList[2].setImageData(fi_num0);
-            break;
-        case 1:
-            scoreList[2].setImageData(fi_num1);
-            break;
-        case 2:
-            scoreList[2].setImageData(fi_num2);
-            break;
-        case 3:
-            scoreList[2].setImageData(fi_num3);
-            break;
-        case 4:
-            scoreList[2].setImageData(fi_num4);
-            break;
-        case 5:
-            scoreList[2].setImageData(fi_num5);
-            break;
-        case 6:
-            scoreList[2].setImageData(fi_num6);
-            break;
-        case 7:
-            scoreList[2].setImageData(fi_num7);
-            break;
-        case 8:
-            scoreList[2].setImageData(fi_num8);
-            break;
-        case 9:
-            scoreList[2].setImageData(fi_num9);
-            break;
+    case 0:
+        scoreList[2].setImageData(fi_num0);
+        break;
+    case 1:
+        scoreList[2].setImageData(fi_num1);
+        break;
+    case 2:
+        scoreList[2].setImageData(fi_num2);
+        break;
+    case 3:
+        scoreList[2].setImageData(fi_num3);
+        break;
+    case 4:
+        scoreList[2].setImageData(fi_num4);
+        break;
+    case 5:
+        scoreList[2].setImageData(fi_num5);
+        break;
+    case 6:
+        scoreList[2].setImageData(fi_num6);
+        break;
+    case 7:
+        scoreList[2].setImageData(fi_num7);
+        break;
+    case 8:
+        scoreList[2].setImageData(fi_num8);
+        break;
+    case 9:
+        scoreList[2].setImageData(fi_num9);
+        break;
 
     }
 
     switch (scoreTens) {
-        case 0:
-            scoreList[1].setImageData(fi_num0);
-            break;
-        case 1:
-            scoreList[1].setImageData(fi_num1);
-            break;
-        case 2:
-            scoreList[1].setImageData(fi_num2);
-            break;
-        case 3:
-            scoreList[1].setImageData(fi_num3);
-            break;
-        case 4:
-            scoreList[1].setImageData(fi_num4);
-            break;
-        case 5:
-            scoreList[1].setImageData(fi_num5);
-            break;
-        case 6:
-            scoreList[1].setImageData(fi_num6);
-            break;
-        case 7:
-            scoreList[1].setImageData(fi_num7);
-            break;
-        case 8:
-            scoreList[1].setImageData(fi_num8);
-            break;
-        case 9:
-            scoreList[1].setImageData(fi_num9);
-            break;
+    case 0:
+        scoreList[1].setImageData(fi_num0);
+        break;
+    case 1:
+        scoreList[1].setImageData(fi_num1);
+        break;
+    case 2:
+        scoreList[1].setImageData(fi_num2);
+        break;
+    case 3:
+        scoreList[1].setImageData(fi_num3);
+        break;
+    case 4:
+        scoreList[1].setImageData(fi_num4);
+        break;
+    case 5:
+        scoreList[1].setImageData(fi_num5);
+        break;
+    case 6:
+        scoreList[1].setImageData(fi_num6);
+        break;
+    case 7:
+        scoreList[1].setImageData(fi_num7);
+        break;
+    case 8:
+        scoreList[1].setImageData(fi_num8);
+        break;
+    case 9:
+        scoreList[1].setImageData(fi_num9);
+        break;
 
     }
 
@@ -848,9 +843,9 @@ int main()
     // 
     // 
     staticObject* staticObjectList = new staticObject[staticObjectsCount]; //20 items by default
-    
-    
-    
+
+
+
 
 
     //create an oversized framebuffer
@@ -938,8 +933,6 @@ int main()
         buffer[i / 3] = (bg[i + 2] << 16) | (bg[i + 1] << 8) | (bg[i]);
     }
 
-
-
     for (int i = 0; i < maskObject.getWidth() * maskObject.getHeight() * 3; i += 3) {
         uint32_t pixel = (maskObject.getImageData()[i + 2] << 16) | (maskObject.getImageData()[i + 1] << 8) | (maskObject.getImageData()[i]);
         if (pixel) {
@@ -959,7 +952,7 @@ int main()
 
 
     //Initialize score and life 
-    staticObject* scoreList= new staticObject[3]; 
+    staticObject* scoreList = new staticObject[3];
     staticObject* lifeList = new staticObject[3];
 
     //score text
@@ -1022,86 +1015,60 @@ int main()
         //* TODO : UNCOMMENT THIS TO ENABLE GRAVITY
         ball_sprite.setY(ball_sprite.getY() + gravity);
         //if there is collision reverse this move
-        if (ball_sprite.getY() >= 0 && !ball_sprite.detectCollision(&maskObject, bg_img)) {
+        if (ball_sprite.detectCollision(&maskObject, bg_img)){
+            ball_sprite.setY(ball_sprite.getY() - gravity);
+            ball_sprite.setAir(0);        
+        }
+        
+
+        if (ball_sprite.getJump() > 0) {
             
-            
-            ball_sprite.setAir(1);
-            //ball_sprite.setJump(1);
-            if (bg_img.bg_y + gravity <= bg_img.height - window_height && bg_img.bg_y + window_height <= bg_img.height) {
-                bg_img.bg_y += gravity;
-                panCameraBottom(&ball_sprite, &bg_img, gravity); //qckui fxi
+            if (ball_sprite.getRightState()) {
+                ball_sprite.testMoveX(5);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(-5);
+
+                }
+                
             }
+            else if (ball_sprite.getLeftState()) {
+                ball_sprite.testMoveX(-5);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(5);
+
+                }
+            }
+
+
+            ball_sprite.setY(ball_sprite.getY() - 5);
+
+            ball_sprite.setJump(ball_sprite.getJump() - 1);
+
+
+            if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                ball_sprite.testMoveY(5);
+            }
+
+        
         }
         else {
-            //printf("Ball landed");
-            ball_sprite.setJump(0);
-            ball_sprite.setAir(0);
-            ball_sprite.setJumpLimit(0);
-            ball_sprite.setRightState(0);
-            ball_sprite.setLeftState(0);
-
-            ball_sprite.setY(ball_sprite.getY() - gravity);
-
-        }
-
-        if (ball_sprite.getJump()) {
-            if (!(ball_sprite.getJumpLimit() >= 10)) {
-                ball_sprite.setJumpLimit(ball_sprite.getJumpLimit() + 1);
-            }
-
-            //ball_sprite.setJumpLimit(1);
-
-            if (bg_img.bg_y - 20 >= 0 && bg_img.bg_y <= bg_img.height - window_height && !(ball_sprite.getJumpLimit() >= 10)) {
-                bg_img.bg_y -= 20;
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    bg_img.bg_y += 20;
-                }
-            }
-            else if (ball_sprite.getY() - 20 >= 0 && !(ball_sprite.getJumpLimit() >= 10)) {
-                ball_sprite.testMoveY(-20);
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    ball_sprite.testMoveY(20);
-                }
-            }
-
-            if (ball_sprite.getLeftState()) {
-                if (bg_img.bg_x - 10 >= 0 && bg_img.bg_x <= bg_img.width - window_width) {
-                    bg_img.bg_x -= 10;
-
-                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                        bg_img.bg_x += 10;
-                    }
-
-                }
-                else if (ball_sprite.getX() - 10 >= 0) {
-                    ball_sprite.testMoveX(-10);
-                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                        ball_sprite.testMoveX(10);
-                    }
-
-                }
-            }
-
             if (ball_sprite.getRightState()) {
-                if (bg_img.bg_x + 10 <= bg_img.width - window_width && bg_img.bg_x + window_width <= bg_img.width) {
-                    bg_img.bg_x += 10;
-                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                        bg_img.bg_x -= 10;
-                    }
-                }
-                else if (ball_sprite.getX() + 10 <= window_width - ball_sprite.getWidth()) {
-                    ball_sprite.testMoveX(10);
-                    if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                        ball_sprite.testMoveX(-10);
-                    }
+                ball_sprite.testMoveX(5);
+                ball_sprite.setRightState(0);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(-5);
+
                 }
             }
-            //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
-            //if (ball_sprite.getJumpLimit() >= 100) {
-            //    ball_sprite.setJumpLimit(-100);
-            //}
-        }
+            else if (ball_sprite.getLeftState()) {
+                ball_sprite.testMoveX(-5);
+                ball_sprite.setLeftState(0);
+                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
+                    ball_sprite.testMoveX(5);
 
+                }
+            }
+        }
 
 
         for (int i = 0; i < staticObjectsCount; i++) {
@@ -1114,38 +1081,7 @@ int main()
 
         updateAbsCoords(&ball_sprite, &bg_img);
 
-        if (ball_sprite.getLeftState()) {
-            if (bg_img.bg_x - 10 >= 0 && bg_img.bg_x <= bg_img.width - window_width) {
-                bg_img.bg_x -= 10;
-
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    bg_img.bg_x += 10;
-                }
-
-            }
-            else if (ball_sprite.getX() - 10 >= 0) {
-                ball_sprite.testMoveX(-10);
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    ball_sprite.testMoveX(10);
-                }
-
-            }
-        }
-
-        if (ball_sprite.getRightState()) {
-            if (bg_img.bg_x + 10 <= bg_img.width - window_width && bg_img.bg_x + window_width <= bg_img.width) {
-                bg_img.bg_x += 10;
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    bg_img.bg_x -= 10;
-                }
-            }
-            else if (ball_sprite.getX() + 10 <= window_width - ball_sprite.getWidth()) {
-                ball_sprite.testMoveX(10);
-                if (ball_sprite.detectCollision(&maskObject, bg_img)) {
-                    ball_sprite.testMoveX(-10);
-                }
-            }
-        }
+        
         //printf("\nBall Sprite: %d\n", ball_sprite.getJumpLimit());
         //if (ball_sprite.getJumpLimit() >= 100) {
         //    ball_sprite.setJumpLimit(-100);
@@ -1241,6 +1177,8 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
 
             ball_sprite->setLeftState(1);
             ball_sprite->setRightState(0);
+
+
             if (bg->bg_x - 10 >= 0 && bg->bg_x <= bg->width - window_width) {
                 bg->bg_x -= 10;
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
@@ -1272,35 +1210,50 @@ void key_press(struct mfb_window* window, mfb_key key, mfb_key_mod mod, bool isP
                 }
             }
         } //endif right
-        if (key == KB_KEY_UP && !(ball_sprite->getJump()) && !(ball_sprite->getAir())) {
-            ball_sprite->setJump(1);
-            ball_sprite->setUpState(1);
+        if (key == KB_KEY_UP && !ball_sprite->getJump() && !ball_sprite->getAir()) {
+            ball_sprite->setJump(50);
+            ball_sprite->setAir(1);
 
-            if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
-                bg->bg_y -= 20;
-                if (ball_sprite->detectCollision(maskObject, *bg)) {
-                    bg->bg_y += 20;
-                }
+            //if (bg->bg_y - 20 >= 0 && bg->bg_y <= bg->height - window_height) {
+            //    bg->bg_y -= 20;
+            //    if (ball_sprite->detectCollision(maskObject, *bg)) {
+            //        bg->bg_y += 20;
+            //    }
 
-                panCameraTop(ball_sprite, bg, 20); //qiuick fxi
-            }
-            else if (ball_sprite->getY() - 20 >= 0) {
+            //}
+            if (ball_sprite->getY() - 20 >= 0) {
                 ball_sprite->testMoveY(-20);
                 if (ball_sprite->detectCollision(maskObject, *bg)) {
                     ball_sprite->testMoveY(20);
                 }
-                panCameraTop(ball_sprite, bg, 20); //qiuick fxi
 
 
             }
 
         } //endif up
 
-        if (key == KB_KEY_DOWN) {
+        else if (key == KB_KEY_DOWN) {
             ball_sprite->setLeftState(0);
             ball_sprite->setRightState(0);
         } //endif down
 
         staticObjectInteraction(callbackData);
+    }
+    else {
+
+        //ball_sprite.setY(ball_sprite.getY() - 5);
+        //ball_sprite.setJump(ball_sprite.getJump() - 1);
+
+
+        if (key == KB_KEY_LEFT) {
+
+            ball_sprite->setLeftState(0);
+
+        } //endif left
+        if (key == KB_KEY_RIGHT) {
+            ball_sprite->setRightState(0);
+        } //endif right
+
+
     }
 }
